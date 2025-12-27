@@ -36,6 +36,13 @@ app.use("/clients", clientRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/visits", visitRoutes);
 
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
 /* =======================
    🔥 EMPLOYEE TRACKING
 ======================= */
