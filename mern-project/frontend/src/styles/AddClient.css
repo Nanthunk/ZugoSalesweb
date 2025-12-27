@@ -1,0 +1,126 @@
+
+
+.form-card {
+  background: white;
+  width: 800px;
+  padding: 30px 40px;
+  border-radius: 14px;
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+.client-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 20px;
+  color: #5a0278;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.client-form input,
+.client-form select {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+.client-form input:focus,
+.client-form select:focus {
+  border-color: #7d0af3;
+  box-shadow: 0 0 3px #b47cf9;
+}
+
+/* Center Submit Button */
+.submit-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.submit-btn {
+  background: #7d0af3;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  transition: 0.2s ease;
+}
+
+.submit-btn:hover {
+  background: #6500d3;
+  scale: calc(1.09);
+}
+
+.client-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+}
+
+.client-form select option[value=""] {
+  color: #888;
+}
+
+@media (max-width: 768px) {
+  .form-card {
+    width: 95%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group label {
+    font-size: 16px;
+  }
+
+  .client-form input,
+  .client-form select {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .submit-btn {
+    font-size: 15px;
+    padding: 10px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-card {
+    padding: 16px;
+  }
+
+  .form-group label {
+    font-size: 15px;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+}

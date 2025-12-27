@@ -1,0 +1,123 @@
+/* ================= DESKTOP SIDEBAR ================= */
+
+.sidebar {
+  width: 20%;
+  min-width: 240px;
+  height: 100vh;
+  background: #ffffff;
+  padding: 40px 20px 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 1200; /* ⬅️ ABOVE overlay */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Logo */
+/* Fixed header */
+.logo-header {
+  position: fixed;
+  top: 50;
+  left: 90;
+  width: 100%;
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+
+  padding-left: 20px;
+  /* background-color: #ffffff; */
+
+  /* border-bottom: 1px solid #eaeaea; */
+  z-index: 1000;
+}
+
+/* Logo image */
+.logo-img {
+  height: 120px;        /* logo size */
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
+  padding-top: 100px;
+  padding-left: 50px;
+}
+
+
+
+/* Menu */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 150px;
+}
+  
+
+
+.menu-item {
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 500;
+  background: transparent;
+}
+  
+
+.menu-item.active {
+  background: #7b2cf4;
+  color: #fff;
+}
+
+/* Account section */
+.account-section {
+  margin-top: auto;
+}
+
+/* ================= TOGGLE BUTTON ================= */
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1300; /* ⬅️ highest */
+  background: #7b2cf4;
+  color: white;
+  border: none;
+  font-size: 22px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ================= OVERLAY ================= */
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1100; /* ⬅️ BELOW sidebar */
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+    padding-top: 60px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+}

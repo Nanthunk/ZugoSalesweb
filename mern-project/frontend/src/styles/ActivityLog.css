@@ -1,0 +1,262 @@
+.activity-container {
+  width: 88%;
+  margin: auto;
+  margin-top: 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ---------- ACTIVITY ITEM ---------- */
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f7e6ff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #eed3ff;
+}
+
+.activity-info {
+  font-size: 15px;
+  font-weight: 500;
+  color: #444;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.activity-info span.name {
+  font-weight: 600;
+  color: #333;
+}
+
+.activity-info span.clients {
+  font-weight: 500;
+  color: #6a1b9a;
+}
+
+/* ---------- BUTTON ---------- */
+
+.delete-btn {
+  background: #ff3b3b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease-in-out;
+}
+
+.delete-btn:hover {
+  background: #e60000;
+}
+
+/* ---------- TITLE ---------- */
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #800080;
+  margin-bottom: 18px;
+}
+
+/* ---------- SEARCH ---------- */
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.8px solid #eaeaea;
+  border-radius: 8px;
+  padding: 6px 10px;
+  width: 270px;
+  margin-bottom: 18px;
+}
+
+.search-box .icon {
+  font-size: 18px;
+  opacity: 0.7;
+  margin-right: 8px;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 5px;
+}
+
+/* ---------- ADD FORM ---------- */
+
+.add-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.add-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  flex: 1;
+  font-size: 14px;
+}
+
+.add-form button {
+  background: #800080;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-form button:hover {
+  opacity: 0.8;
+}
+
+/* ---------- FILTER ---------- */
+
+.filter-section {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 12px 15px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  align-items: center;
+}
+
+.filter-section select {
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
+.filter-section select:focus {
+  border-color: #007bff;
+  outline: none;
+  background: #fff;
+}
+
+/* ---------- LIST ITEM ---------- */
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7e6ff;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #e7cdfc;
+}
+
+.left-info {
+  display: flex;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.emp-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.count {
+  font-size: 14px;
+  color: #6a1b9a;
+  font-weight: 500;
+}
+
+/* ================================================= */
+/* ================= MOBILE FIX ==================== */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+  /* 🔥 REMOVE SIDEBAR SPACE */
+  .layout-container {
+    display: block !important;
+  }
+
+  .content-area {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+  }
+
+  /* FULL WIDTH PAGE */
+  .activity-container {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  /* STACK FORM */
+  .add-form {
+    flex-direction: column;
+  }
+
+  .add-form button {
+    width: 100%;
+  }
+
+  /* FILTER STACK */
+  .filter-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filter-section select {
+    width: 100%;
+  }
+
+  /* LIST STACK */
+  .list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+
+  .title {
+    font-size: 18px;
+  }
+
+  .emp-name {
+    font-size: 14px;
+  }
+
+  .count {
+    font-size: 13px;
+  }
+
+  .delete-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}

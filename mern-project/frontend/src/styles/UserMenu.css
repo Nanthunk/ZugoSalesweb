@@ -1,0 +1,142 @@
+.user-menu-container {
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+/* Login Button (Visible only when logged out) */
+.login-btn {
+  background-color: #6a0dad;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  opacity: 0.85;
+}
+
+/* Purple Circle for logged in user */
+.user-circle {
+  width: 38px;
+  height: 38px;
+  background-color: #6a0dad;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.user-circle:hover {
+  transform: scale(1.06);
+}
+
+/* avatar image inside circle */
+.user-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+/* initial letter when no avatar */
+.user-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Dropdown Menu */
+.user-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  width: 180px;
+  z-index: 2000;
+}
+
+.user-dropdown p {
+  margin: 0;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.user-dropdown p:hover {
+  background-color: #f0e6ff;
+}
+
+/* ================================================= */
+/* ================= MOBILE RESPONSIVE ============= */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+  .user-menu-container {
+    top: 12px;
+    right: 15px;
+    z-index: 2500; /* above sidebar */
+  }
+
+  /* Smaller button */
+  .login-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Smaller avatar */
+  .user-circle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .user-initial {
+    font-size: 14px;
+  }
+
+  /* Dropdown adjusts to screen */
+  .user-dropdown {
+    top: 42px;
+    right: 0;
+    width: 160px;
+  }
+
+  .user-dropdown p {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+
+  .user-menu-container {
+    right: 10px;
+  }
+
+  .user-dropdown {
+    width: 150px;
+  }
+
+  .user-dropdown p {
+    font-size: 12.5px;
+  }
+}

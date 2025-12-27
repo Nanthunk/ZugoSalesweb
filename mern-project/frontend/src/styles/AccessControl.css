@@ -1,0 +1,321 @@
+/* ---------- MAIN LAYOUT ---------- */
+
+.access-container {
+  padding: 20px 40px;
+  font-family: "Poppins", sans-serif;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #4c1369;
+}
+
+.sub-text {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 25px;
+}
+
+/* ---------- NOT ADMIN BOX ---------- */
+
+.not-admin-box {
+  padding: 20px;
+  background: #ffe5e5;
+  border-left: 8px solid #ff4d4d;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* ---------- ADMIN LIST ---------- */
+
+.admin-section {
+  margin-bottom: 30px;
+}
+
+.admin-list {
+  padding: 0;
+  margin-top: 15px;
+}
+
+.admin-list li {
+  list-style: none;
+  padding: 10px 15px;
+  background: #fafafa;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background: #4c1369;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* ---------- ADD MEMBER CARD ---------- */
+
+.add-member-card {
+  width: 100%;
+  max-width: 750px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+}
+
+.add-member-card h3 {
+  margin-bottom: 5px;
+}
+
+.small-info {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+/* ---------- FORM ROW (IMAGE + FIELDS) ---------- */
+
+.form-row {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- PROFILE IMAGE + UPLOAD ---------- */
+
+.preview-img {
+  height: 110px;
+  width: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e1e1e1;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.upload-btn {
+  padding: 8px 16px;
+  background: #4c1369;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.upload-btn:hover {
+  background: #350d4b;
+}
+
+/* ---------- INPUT FIELDS ---------- */
+
+.fields-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.fields-section input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #dfdfdf;
+  font-size: 14px;
+}
+
+.fields-section input:focus {
+  border-color: #4c1369;
+  outline: none;
+}
+
+/* ---------- SUBMIT BUTTON ---------- */
+
+.add-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4c1369;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.add-btn:hover {
+  background: #350d4b;
+}
+
+/* ---------- MEMBERS SECTION ---------- */
+
+.members-section h3 {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.member-card {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.member-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.member-role,
+.member-email,
+.member-phone {
+  font-size: 14px;
+  color: #555;
+  margin-top: 5px;
+}
+
+/* ================================================= */
+/* ================= MOBILE RESPONSIVE ============= */
+/* ================================================= */
+
+@media (max-width: 768px) {
+
+   /* Layout wrapper */
+  .layout-container {
+    display: block !important;
+  }
+
+  /* Main content should take full width */
+  .content-area {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+  }
+
+  /* Main container */
+  .access-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .sub-text {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  /* Admin / Warning box */
+  .not-admin-box {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  /* Add member card */
+  .add-member-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  /* Stack image + form */
+  .form-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Center image section */
+  .image-section {
+    width: 100%;
+    align-items: center;
+  }
+
+  .preview-img {
+    height: 95px;
+    width: 95px;
+  }
+
+  .upload-btn {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  /* Inputs */
+  .fields-section input {
+    padding: 11px;
+    font-size: 13.5px;
+  }
+
+  .add-btn {
+    font-size: 14px;
+    padding: 11px;
+  }
+
+  /* Members grid → single column */
+  .member-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .member-card {
+    padding: 18px;
+  }
+
+  .member-name {
+    font-size: 16px;
+  }
+
+  .member-role,
+  .member-email,
+  .member-phone {
+    font-size: 13px;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .preview-img {
+    height: 85px;
+    width: 85px;
+  }
+
+  .upload-btn {
+    font-size: 12.5px;
+  }
+
+  .add-btn {
+    font-size: 13.5px;
+  }
+
+  .member-name {
+    font-size: 15px;
+  }
+}
+

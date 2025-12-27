@@ -1,0 +1,45 @@
+/* Main layout */
+.layout-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar (25%) */
+.sidebar {
+  width: 20%;
+  background: #fafafa;
+  padding: 30px;
+  border-right: 1px solid #eee;
+  position: fixed;
+  height: 100%;
+}
+
+.menu {
+  margin-top: 40px;
+}
+
+.menu-item {
+  display: block;
+  padding: 12px 10px;
+  margin-bottom: 10px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.menu-item.active {
+  background: #7e0cf5;
+  color: white;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Right side content */
+.content-area {
+  margin-left: 25%;
+  width: 75%;
+  padding: 40px;
+}
