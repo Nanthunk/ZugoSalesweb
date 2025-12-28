@@ -21,9 +21,10 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/admin-login",
-        { email, password }
-      );
+  `${import.meta.env.VITE_API_URL}/api/users/admin-login`,
+  { email, password }
+);
+
 
       if (res.data?.success) {
         const adminUser = {
@@ -56,9 +57,10 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/employee-login",
-        { email }
-      );
+  `${import.meta.env.VITE_API_URL}/api/users/employee-login`,
+  { email }
+);
+
 
       if (res.data?.success && res.data?.employee) {
         const employee = {

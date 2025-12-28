@@ -1,9 +1,9 @@
 // AccessControl.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "../styles/AccessControl.css";
 import UserMenu from "../components/UserMenu";
 import { useSearchParams } from "react-router-dom";
+import api from "../api/axios";
 
 const AccessControl = () => {
   const [admins, setAdmins] = useState([]);
@@ -31,15 +31,14 @@ const AccessControl = () => {
     storedUser = null;
   }
 
-
   const allowedAdmins = [
-  "zugoprivatelimited.md@gmail.com",
-  "zugoprivatelimited.hr@gmail.com",
-];
+    "zugoprivatelimited.md@gmail.com",
+    "zugoprivatelimited.hr@gmail.com",
+  ];
 
-const isAdmin =
-  storedUser?.role === "admin" &&
-  allowedAdmins.includes(storedUser?.email);
+  const isAdmin =
+    storedUser?.role === "admin" &&
+    allowedAdmins.includes(storedUser?.email);
 
   // ------- FETCH ADMINS + MEMBERS -------
   useEffect(() => {
@@ -50,7 +49,7 @@ const isAdmin =
 
   const fetchAdmins = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/members/admins");
+      const res = await api.get("/api/members/admins");
       setAdmins(res.data);
     } catch (err) {
       console.error(err);
@@ -59,7 +58,7 @@ const isAdmin =
 
   const fetchMembers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/members");
+      const res = await api.get("/api/members");
       setMembers(res.data);
     } catch (err) {
       console.error(err);
@@ -68,9 +67,7 @@ const isAdmin =
 
   const fetchEditingMember = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/members/${editId}`
-      );
+      const res = await api.get(`/api/members/${editId}`);
       const m = res.data;
 
       setFormData({
@@ -113,16 +110,10 @@ const isAdmin =
 
     try {
       if (isEditing) {
-        await axios.put(
-          `http://localhost:5000/api/members/update/${editId}`,
-          form
-        );
+        await api.put(`/api/members/update/${editId}`, form);
         alert("Member updated!");
       } else {
-        await axios.post(
-          "http://localhost:5000/api/members/add",
-          form
-        );
+        await api.post("/api/members/add", form);
         alert("Member added!");
       }
     } catch (err) {
@@ -156,7 +147,7 @@ const isAdmin =
                     formData.image
                       ? URL.createObjectURL(formData.image)
                       : formData.existingImage
-                      ? `http://localhost:5000${formData.existingImage}`
+                      ? `${import.meta.env.VITE_API_URL}${formData.existingImage}`
                       : "/default-user.png"
                   }
                   className="preview-img"

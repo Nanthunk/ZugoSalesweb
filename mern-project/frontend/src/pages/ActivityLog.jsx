@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { isAdmin } from "../auth/isAdmin";
 import "../styles/ActivityLog.css";
 import UserMenu from "../components/UserMenu";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 const ActivityLog = () => {
   const userEmail = localStorage.getItem("email");
@@ -44,8 +44,8 @@ const ActivityLog = () => {
 
   // Fetch members
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/members")
+    api
+      .get("/api/members")
       .then((res) => setMembers(res.data))
       .catch(() => console.log("Cannot load members"));
   }, []);
@@ -53,7 +53,7 @@ const ActivityLog = () => {
   // Fetch activities
   const fetchActivities = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/activity");
+      const res = await api.get("/api/activity");
       setActivities(res.data);
     } catch (err) {
       console.log("Fetch error:", err);
@@ -71,7 +71,7 @@ const ActivityLog = () => {
       return alert("Please fill all details");
 
     try {
-      await axios.post("http://localhost:5000/api/activity/add", {
+      await api.post("/api/activity/add", {
         name: newName.trim(),
         clients: Number(newClients),
         month: Number(month),
@@ -94,7 +94,7 @@ const ActivityLog = () => {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
-      const res = await axios.delete(`http://localhost:5000/api/activity/${id}`);
+      const res = await api.delete(`/api/activity/${id}`);
 
       if (res.data.success) {
         setActivities((prev) => prev.filter((a) => a._id !== id));
@@ -203,13 +203,11 @@ const ActivityLog = () => {
             key={item._id}
             className="list-item"
             style={{
-              backgroundColor: getMonthColor(item.month),   // ⭐ APPLY MONTH COLOR
+              backgroundColor: getMonthColor(item.month),
               borderRadius: "12px",
               padding: "12px",
             }}
           >
-
-            {/* LEFT SIDE — CLICKABLE */}
             <div
               className="left-info"
               onClick={() => navigate(`/employee-activity/${item.name}`)}
@@ -223,7 +221,6 @@ const ActivityLog = () => {
               </span>
             </div>
 
-            {/* DELETE BUTTON */}
             {admin && (
               <button
                 className="delete-btn"
@@ -235,7 +232,6 @@ const ActivityLog = () => {
           </div>
         ))}
       </div>
-
     </div>
   );
 };

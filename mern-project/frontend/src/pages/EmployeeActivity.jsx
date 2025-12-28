@@ -21,7 +21,7 @@ const EmployeeActivity = () => {
   const { name } = useParams();
   const decodedName = decodeURIComponent(name).trim();
 
-  const [records, setRecords] = useState([]); // all activity records
+  const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
@@ -29,36 +29,35 @@ const EmployeeActivity = () => {
 
   let isAdmin = false;
 
-try {
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    const user = JSON.parse(storedUser);
-    isAdmin = user?.role === "admin";
+  try {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      isAdmin = user?.role === "admin";
+    }
+  } catch (err) {
+    console.error("Invalid user in localStorage", err);
+    localStorage.removeItem("user");
   }
-} catch (err) {
-  console.error("Invalid user in localStorage", err);
-  localStorage.removeItem("user");
-}
-
-
 
   // Fetch activity records for this employee
   useEffect(() => {
-  axios.get(`http://localhost:5000/api/activity/employee/${decodedName}`)// << FIXED
-    .then((res) => {
-      const filtered = res.data.filter(
-        (a) => a.name.toLowerCase() === decodedName.toLowerCase()
-      );
+    axios
+      .get(
+        `https://zugo-backend-trpb.onrender.com/api/activity/employee/${decodedName}`
+      )
+      .then((res) => {
+        const filtered = res.data.filter(
+          (a) => a.name.toLowerCase() === decodedName.toLowerCase()
+        );
 
-      setRecords(filtered);
-      setFilteredRecords(filtered);
-    })
-    .catch((err) => {
-      console.log("Error loading employee activity:", err);
-    });
-}, [decodedName]);
-
-
+        setRecords(filtered);
+        setFilteredRecords(filtered);
+      })
+      .catch((err) => {
+        console.log("Error loading employee activity:", err);
+      });
+  }, [decodedName]);
 
   // Apply month/year filters
   useEffect(() => {
@@ -70,7 +69,6 @@ try {
     setFilteredRecords(temp);
   }, [filterMonth, filterYear, records]);
 
-  // Sort for graph
   const sortedGraph = [...filteredRecords].sort((a, b) => {
     if (a.year !== b.year) return b.year - a.year;
     return b.month - a.month;
@@ -87,45 +85,50 @@ try {
     ],
   };
 
-  // Stats
   const totalClients = filteredRecords.reduce((sum, r) => sum + r.clients, 0);
   const bestRecord =
     filteredRecords.length > 0
-      ? filteredRecords.reduce((max, r) => (r.clients > max.clients ? r : max))
+      ? filteredRecords.reduce((max, r) =>
+          r.clients > max.clients ? r : max
+        )
       : null;
 
-  const leaderboard = [...records].sort((a, b) => b.clients - a.clients).slice(0, 5);
+  const leaderboard = [...records]
+    .sort((a, b) => b.clients - a.clients)
+    .slice(0, 5);
 
   const [visits, setVisits] = useState([]);
 
-useEffect(() => {
-  axios
-    .get(`http://localhost:5000/api/visits/employee/${decodedName}`)
-    .then((res) => setVisits(res.data));
-}, [decodedName]);
+  useEffect(() => {
+    axios
+      .get(
+        `https://zugo-backend-trpb.onrender.com/api/visits/employee/${decodedName}`
+      )
+      .then((res) => setVisits(res.data));
+  }, [decodedName]);
 
-const deleteVisit = async (id) => {
-  if (!window.confirm("Delete this visit?")) return;
+  const deleteVisit = async (id) => {
+    if (!window.confirm("Delete this visit?")) return;
 
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
 
-    await axios.delete(`http://localhost:5000/api/visits/${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`, // ✅ REQUIRED
-      },
-    });
+      await axios.delete(
+        `https://zugo-backend-trpb.onrender.com/api/visits/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
 
-    setVisits((prev) => prev.filter((v) => v._id !== id));
-    alert("Deleted successfully ✅");
-  } catch (err) {
-    console.error("Delete error:", err.response?.data || err.message);
-    alert("Delete failed ❌ ");
-  }
-};
-
-
-
+      setVisits((prev) => prev.filter((v) => v._id !== id));
+      alert("Deleted successfully ✅");
+    } catch (err) {
+      console.error("Delete error:", err.response?.data || err.message);
+      alert("Delete failed ❌ ");
+    }
+  };
 
   return (
     <div className="employee-activity-container" style={{ padding: "20px" }}>
@@ -133,35 +136,24 @@ const deleteVisit = async (id) => {
       <h2>{decodedName}'s Activity</h2>
 
       {/* Filters */}
-      <div className="filters" style={{ marginTop: "20px", display: "flex", gap: "15px" }}>
+      <div
+        className="filters"
+        style={{ marginTop: "20px", display: "flex", gap: "15px" }}
+      >
         <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
           <option value="">Filter by Month</option>
           {[
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
+            "January","February","March","April","May","June",
+            "July","August","September","October","November","December",
           ].map((m, i) => (
-            <option key={i} value={i + 1}>
-              {m}
-            </option>
+            <option key={i} value={i + 1}>{m}</option>
           ))}
         </select>
 
         <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)}>
           <option value="">Filter by Year</option>
           {Array.from({ length: 20 }, (_, i) => 2020 + i).map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
+            <option key={y} value={y}>{y}</option>
           ))}
         </select>
       </div>
@@ -174,14 +166,19 @@ const deleteVisit = async (id) => {
         </p>
         {bestRecord && (
           <p>
-            Best Month: <b>{bestRecord.month}/{bestRecord.year}</b> — {bestRecord.clients} clients
+            Best Month: <b>{bestRecord.month}/{bestRecord.year}</b> —{" "}
+            {bestRecord.clients} clients
           </p>
         )}
       </div>
 
       {/* Graph */}
       <div className="graph-box" style={{ width: "70%", marginTop: "30px" }}>
-        {filteredRecords.length > 0 ? <Bar data={chartData} /> : <p>No activity found for this filter.</p>}
+        {filteredRecords.length > 0 ? (
+          <Bar data={chartData} />
+        ) : (
+          <p>No activity found for this filter.</p>
+        )}
       </div>
 
       {/* Activity List */}
@@ -216,62 +213,57 @@ const deleteVisit = async (id) => {
         )}
       </div>
 
+      <h3 style={{ marginTop: 40 }}>Visit Photos</h3>
 
-    <h3 style={{ marginTop: 40 }}>Visit Photos</h3>
+      <input
+        type="date"
+        value={filterDate}
+        onChange={(e) => setFilterDate(e.target.value)}
+      />
 
-<input
-  type="date"
-  value={filterDate}
-  onChange={(e) => setFilterDate(e.target.value)}
-/>
-
-{visits.filter((v) => {
-  if (!filterDate) return true;
-  return (
-    new Date(v.createdAt).toISOString().slice(0, 10) === filterDate
-  );
-}).length === 0 && filterDate ? (
-  <p style={{ marginTop: "20px", fontWeight: "bold", color: "#666" }}>
-    There is no images on this day..
-  </p>
-) : (
-  <div className="visit-grid">
-    {visits
-      .filter((v) => {
+      {visits.filter((v) => {
         if (!filterDate) return true;
-        return (
-          new Date(v.createdAt).toISOString().slice(0, 10) === filterDate
-        );
-      })
-      .map((v) => (
-        <div className="visit-card" key={v._id}>
-          <img
-            src={`http://localhost:5000/uploads/visits/${v.photo}`}
-            alt="visit"
-          />
-          <div className="visit-info">
-            <p><b>Client:</b> {v.clientName}</p>
-            <p><b>Phone:</b> {v.clientPhone}</p>
-            <p className="date">
-              {new Date(v.createdAt).toLocaleString()}
-            </p>
-            {isAdmin && (
-  <button
-    className="delete-visit-btn"
-    onClick={() => deleteVisit(v._id)}
-  >
-    Delete
-  </button>
-)}
+        return new Date(v.createdAt).toISOString().slice(0, 10) === filterDate;
+      }).length === 0 && filterDate ? (
+        <p style={{ marginTop: "20px", fontWeight: "bold", color: "#666" }}>
+          There is no images on this day..
+        </p>
+      ) : (
+        <div className="visit-grid">
+          {visits
+            .filter((v) => {
+              if (!filterDate) return true;
+              return (
+                new Date(v.createdAt).toISOString().slice(0, 10) === filterDate
+              );
+            })
+            .map((v) => (
+              <div className="visit-card" key={v._id}>
+                <img
+                  src={`https://zugo-backend-trpb.onrender.com/uploads/visits/${v.photo}`}
+                  alt="visit"
+                />
+                <div className="visit-info">
+                  <p><b>Client:</b> {v.clientName}</p>
+                  <p><b>Phone:</b> {v.clientPhone}</p>
+                  <p className="date">
+                    {new Date(v.createdAt).toLocaleString()}
+                  </p>
 
-          </div>
+                  {isAdmin && (
+                    <button
+                      className="delete-visit-btn"
+                      onClick={() => deleteVisit(v._id)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
         </div>
-      ))}
-  </div>
-)}
-
-
-</div>
+      )}
+    </div>
   );
 };
 

@@ -106,12 +106,13 @@ export default function EmployeeTracking() {
 
     const markersRef = { current: [] };
 
-    axios.get("http://localhost:5000/api/employee-locations")
+    axios
+      .get("https://zugo-backend-trpb.onrender.com/api/employee-locations")
       .then((res) => {
-        markersRef.current.forEach(m => mapRef.current.removeLayer(m));
+        markersRef.current.forEach((m) => mapRef.current.removeLayer(m));
         markersRef.current = [];
 
-        res.data.forEach(emp => {
+        res.data.forEach((emp) => {
           if (!emp.lat || !emp.lng) return;
 
           const marker = L.marker([emp.lat, emp.lng], { icon: markerIcon })
@@ -173,58 +174,56 @@ export default function EmployeeTracking() {
   };
 
   const [toast, setToast] = useState({
-  show: false,
-  message: "",
-  type: "",
-});
-
+    show: false,
+    message: "",
+    type: "",
+  });
 
   /* ======================
      SAVE IMAGE + DETAILS
   ====================== */
   const savePhoto = async () => {
-  if (!image) {
-    alert("Capture image first");
-    return;
-  }
+    if (!image) {
+      alert("Capture image first");
+      return;
+    }
 
-  try {
-    setSaving(true);
+    try {
+      setSaving(true);
 
-    const blob = await (await fetch(image)).blob();
+      const blob = await (await fetch(image)).blob();
 
-    const formData = new FormData();
-    formData.append("photo", blob); // 🔥 DIRECT BLOB (IMPORTANT)
-    formData.append("employeeName", employeeName);
-    formData.append("clientName", clientName);
-    formData.append("clientPhone", clientPhone);
-    formData.append("lat", lat);
-    formData.append("lng", lng);
+      const formData = new FormData();
+      formData.append("photo", blob);
+      formData.append("employeeName", employeeName);
+      formData.append("clientName", clientName);
+      formData.append("clientPhone", clientPhone);
+      formData.append("lat", lat);
+      formData.append("lng", lng);
 
-    await axios.post("http://localhost:5000/api/visits", formData);
+      await axios.post(
+        "https://zugo-backend-trpb.onrender.com/api/visits",
+        formData
+      );
 
-    alert("Visit saved successfully");
-    stopCamera();
-    setImage(null);
-  } catch (err) {
-    console.error(err);
-    alert("Save failed");
-  } finally {
-    setSaving(false);
-  }
-};
-
-
-
+      alert("Visit saved successfully");
+      stopCamera();
+      setImage(null);
+    } catch (err) {
+      console.error(err);
+      alert("Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="tracking-container">
       <UserMenu />
+
       {toast.show && (
-  <div className={`toast ${toast.type}`}>
-    {toast.message}
-  </div>
-)}
+        <div className={`toast ${toast.type}`}>{toast.message}</div>
+      )}
 
       <h2>Employee Tracking</h2>
       <div id="map" className="map-container"></div>
@@ -257,11 +256,7 @@ export default function EmployeeTracking() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
-                <input
-                  value={selectedEmployee}
-                  disabled
-                  placeholder="Employee Name"
-                />
+                <input value={selectedEmployee} disabled />
                 <button onClick={savePhoto} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>

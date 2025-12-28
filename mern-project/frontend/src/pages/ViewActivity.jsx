@@ -10,13 +10,15 @@ const ViewActivity = () => {
 
   useEffect(() => {
     // fetch sales member details
-    axios.get(`http://localhost:5000/api/sales/${id}`)
-      .then(res => setMember(res.data))
+    axios
+      .get(`https://zugo-backend-trpb.onrender.com/api/sales/${id}`)
+      .then((res) => setMember(res.data))
       .catch(() => alert("Error fetching member"));
 
     // fetch activity logs
-    axios.get(`http://localhost:5000/api/activity/employee/${id}`)
-      .then(res => setLogs(res.data))
+    axios
+      .get(`https://zugo-backend-trpb.onrender.com/api/activity/employee/${id}`)
+      .then((res) => setLogs(res.data))
       .catch(() => console.log("No logs found"));
   }, [id]);
 
@@ -35,7 +37,9 @@ const ViewActivity = () => {
             ) : (
               logs.map((log, index) => (
                 <div key={index} className="log-item">
-                  <span>{log.month} / {log.year}</span>
+                  <span>
+                    {log.month} / {log.year}
+                  </span>
                   <span>Booked: {log.clients}</span>
                 </div>
               ))

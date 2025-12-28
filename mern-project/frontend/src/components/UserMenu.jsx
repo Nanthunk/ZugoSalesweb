@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/UserMenu.css";
+import api from "../api/axios";
+
+
 
 const UserMenu = () => {
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ const UserMenu = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:5000/api/users/employee-login",
+          `${import.meta.env.VITE_API_URL}/api/users/employee-login`,
           { email: storedUser.email }
         );
 

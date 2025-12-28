@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import UserMenu from "../components/UserMenu.jsx";
+import api from "../api/axios";
+
 
 /* ================= HELPERS ================= */
 
@@ -42,8 +44,7 @@ export default function Dashboard() {
 
   /* ===== Fetch Clients ===== */
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/clients")
+    api.get("/clients");
       .then((res) => setClients(res.data))
       .catch((err) => console.log(err));
   }, []);

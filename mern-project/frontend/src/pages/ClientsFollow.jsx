@@ -13,7 +13,7 @@ export default function ClientsFollow() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/clients")
+      .get(`${import.meta.env.VITE_API_URL}/clients`)
       .then((res) => setClients(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -44,7 +44,9 @@ export default function ClientsFollow() {
     if (!window.confirm("Are you sure you want to delete this client?")) return;
 
     try {
-      const res = await axios.delete(`http://localhost:5000/clients/${id}`);
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/clients/${id}`
+      );
 
       if (res.status === 200 || res.status === 204) {
         setClients((prev) => prev.filter((c) => c._id !== id));
@@ -151,7 +153,6 @@ export default function ClientsFollow() {
                 <td className="col-date">{c.date}</td>
                 <td className="col-type">{c.type}</td>
 
-                {/* SHOW FOLLOWING BY */}
                 <td className="col-follow">
                   {c.followingBy ? c.followingBy : "—"}
                 </td>
