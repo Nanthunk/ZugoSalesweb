@@ -18,17 +18,24 @@ const app = express();
 /* =======================
    MIDDLEWARE
 ======================= */
-app.use(cors());
+// Allow requests from your deployed frontend + localhost (optional for dev)
+app.use(
+  cors({
+    origin: [
+      "https://your-frontend.vercel.app", // replace with your Vercel URL
+      "http://localhost:3000",            // optional, for local dev
+    ],
+  })
+);
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-
-
 /* =======================
-   EXISTING ROUTES
+   ROUTES
 ======================= */
 app.use("/api/users", userRoutes);
 app.use("/api/members", salesMemberRoutes);
@@ -36,32 +43,19 @@ app.use("/clients", clientRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/visits", visitRoutes);
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
- 
-
-/* =======================
-   🔥 EMPLOYEE TRACKING
-======================= */
-
-// Schema
-
-
-// Save location + photo
-
-
 /* =======================
    DATABASE + SERVER
 ======================= */
+const PORT = process.env.PORT || 5000;
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected");
-    app.listen(5000, () => {
-      console.log("🚀 Server running on port 5000");
+
+    // Use process.env.PORT for Render, fallback to 5000 for local dev
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
