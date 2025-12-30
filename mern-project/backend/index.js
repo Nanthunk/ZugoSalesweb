@@ -22,11 +22,14 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://your-frontend.vercel.app", // replace with your Vercel URL
-      "http://localhost:3000",            // optional, for local dev
+      "https://zugo-salesweb.vercel.app", // ✅ REAL Vercel URL
+      "http://localhost:3000"
     ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
   })
 );
+
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -39,7 +42,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 ======================= */
 app.use("/api/users", userRoutes);
 app.use("/api/members", salesMemberRoutes);
-app.use("/clients", clientRoutes);
+app.use("/api/clients", clientRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/visits", visitRoutes);
 
