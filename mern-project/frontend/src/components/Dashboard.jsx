@@ -46,7 +46,7 @@ export default function Dashboard() {
   
   useEffect(() => {
   api
-    .get("/clients")
+    .get("/api/clients")
     .then((res) => setClients(res.data))
     .catch((err) => console.log(err));
 }, []);
