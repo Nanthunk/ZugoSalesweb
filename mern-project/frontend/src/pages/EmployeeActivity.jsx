@@ -44,7 +44,7 @@ const EmployeeActivity = () => {
   useEffect(() => {
     axios
       .get(
-        `https://zugo-backend-trpb.onrender.com/api/activity/employee/${decodedName}`
+        `https://zugo-backend-trph.onrender.com/api/activity/employee/${decodedName}`
       )
       .then((res) => {
         const filtered = res.data.filter(
@@ -102,7 +102,7 @@ const EmployeeActivity = () => {
   useEffect(() => {
     axios
       .get(
-        `https://zugo-backend-trpb.onrender.com/api/visits/employee/${decodedName}`
+        `https://zugo-backend-trph.onrender.com/api/visits/employee/${decodedName}`
       )
       .then((res) => setVisits(res.data));
   }, [decodedName]);
@@ -114,7 +114,7 @@ const EmployeeActivity = () => {
       const user = JSON.parse(localStorage.getItem("user"));
 
       await axios.delete(
-        `https://zugo-backend-trpb.onrender.com/api/visits/${id}`,
+        `https://zugo-backend-trph.onrender.com/api/visits/${id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -240,7 +240,7 @@ const EmployeeActivity = () => {
             .map((v) => (
               <div className="visit-card" key={v._id}>
                 <img
-                  src={`https://zugo-backend-trpb.onrender.com/uploads/visits/${v.photo}`}
+                  src={`https://zugo-backend-trph.onrender.com/uploads/visits/${v.photo}`}
                   alt="visit"
                 />
                 <div className="visit-info">

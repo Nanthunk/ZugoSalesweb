@@ -12,7 +12,7 @@ const SalesMembers = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://zugo-backend-trpb.onrender.com/api/members/")
+    fetch("https://zugo-backend-trph.onrender.com/api/members/")
       .then((res) => res.json())
       .then((data) => setMembers(data))
       .catch((err) => console.error("Fetch members error:", err));
@@ -27,7 +27,7 @@ const SalesMembers = () => {
 
     try {
       await axios.delete(
-        `https://zugo-backend-trpb.onrender.com/api/members/remove/${id}`
+        `https://zugo-backend-trph.onrender.com/api/members/remove/${id}`
       );
       alert("Member removed successfully!");
       setMembers(members.filter((m) => m._id !== id));
@@ -69,7 +69,7 @@ const SalesMembers = () => {
         {filtered.map((m) => (
           <div key={m._id} className="member-card">
             <img
-              src={`https://zugo-backend-trpb.onrender.com${m.image}`}
+              src={`https://zugo-backend-trph.onrender.com${m.image}`}
               className="member-avatar"
             />
 

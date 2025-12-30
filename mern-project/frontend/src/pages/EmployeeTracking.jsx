@@ -107,7 +107,7 @@ export default function EmployeeTracking() {
     const markersRef = { current: [] };
 
     axios
-      .get("https://zugo-backend-trpb.onrender.com/api/employee-locations")
+      .get("https://zugo-backend-trph.onrender.com/api/employee-locations")
       .then((res) => {
         markersRef.current.forEach((m) => mapRef.current.removeLayer(m));
         markersRef.current = [];
@@ -202,7 +202,7 @@ export default function EmployeeTracking() {
       formData.append("lng", lng);
 
       await axios.post(
-        "https://zugo-backend-trpb.onrender.com/api/visits",
+        "https://zugo-backend-trph.onrender.com/api/visits",
         formData
       );
 

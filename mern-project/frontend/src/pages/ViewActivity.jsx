@@ -11,13 +11,13 @@ const ViewActivity = () => {
   useEffect(() => {
     // fetch sales member details
     axios
-      .get(`https://zugo-backend-trpb.onrender.com/api/sales/${id}`)
+      .get(`https://zugo-backend-trph.onrender.com/api/sales/${id}`)
       .then((res) => setMember(res.data))
       .catch(() => alert("Error fetching member"));
 
     // fetch activity logs
     axios
-      .get(`https://zugo-backend-trpb.onrender.com/api/activity/employee/${id}`)
+      .get(`https://zugo-backend-trph.onrender.com/api/activity/employee/${id}`)
       .then((res) => setLogs(res.data))
       .catch(() => console.log("No logs found"));
   }, [id]);
