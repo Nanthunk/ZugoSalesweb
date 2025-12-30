@@ -21,14 +21,17 @@ const app = express();
 // Allow requests from your deployed frontend + localhost (optional for dev)
 app.use(
   cors({
-    origin: [
-      "https://zugo-salesweb.vercel.app", // ✅ REAL Vercel URL
-      "http://localhost:3000"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    origin: "https://zugo-salesweb.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// IMPORTANT for preflight
+app.options("*", cors());
+app.get("/", (req, res) => {
+  res.send("Backend running");
+});
 
 
 
