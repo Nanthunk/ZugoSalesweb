@@ -19,19 +19,11 @@ const app = express();
    MIDDLEWARE
 ======================= */
 // Allow requests from your deployed frontend + localhost (optional for dev)
-app.use(
-  cors({
-    origin: "https://zugo-salesweb.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: "https://zugo-salesweb.vercel.app"
+}));
 
-// IMPORTANT for preflight
-app.options("*", cors());
-app.get("/", (req, res) => {
-  res.send("Backend running");
-});
+app.use(express.json());
 
 
 
