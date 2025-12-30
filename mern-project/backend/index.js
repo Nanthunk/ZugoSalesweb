@@ -23,12 +23,21 @@ app.use(cors({
   origin: "https://zugo-salesweb.vercel.app"
 }));
 
-app.use(express.json());
-
-
-
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://zugo-salesweb.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
 
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
