@@ -43,11 +43,14 @@ export default function Dashboard() {
   const role = user?.role ? user.role.toUpperCase() : "N/A";
 
   /* ===== Fetch Clients ===== */
+  
   useEffect(() => {
-    api.get("/clients");
-      .then((res) => setClients(res.data))
-      .catch((err) => console.log(err));
-  }, []);
+  api
+    .get("/clients")
+    .then((res) => setClients(res.data))
+    .catch((err) => console.log(err));
+}, []);
+
 
   /* ===== Sort Clients ===== */
   useEffect(() => {
