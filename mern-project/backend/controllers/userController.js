@@ -1,7 +1,7 @@
 // backend/controllers/userController.js
 import User from "../models/userModel.js";
-import bcrypt from "bcryptjs";
 import SalesMember from "../models/SalesMember.js";
+import jwt from "jsonwebtoken";
 
 /* =========================
    ADMIN STATIC ACCOUNTS
@@ -28,6 +28,21 @@ export const adminLogin = async (req, res) => {
     });
   }
 
+  // ✅ CREATE TOKEN
+  const token = jwt.sign(
+    { email, role: "admin" },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  // ✅ SET COOKIE (VERY IMPORTANT)
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
   return res.json({
     success: true,
     role: "admin",
@@ -40,9 +55,6 @@ export const adminLogin = async (req, res) => {
 
 /* =========================
    EMPLOYEE LOGIN
-========================= */
-/* =========================
-   EMPLOYEE LOGIN (UPDATED)
 ========================= */
 export const employeeLogin = async (req, res) => {
   const { email } = req.body;
@@ -63,6 +75,25 @@ export const employeeLogin = async (req, res) => {
         message: "This email is not registered. Contact Admin.",
       });
     }
+
+    // ✅ CREATE TOKEN
+    const token = jwt.sign(
+      {
+        id: salesMember._id,
+        email: salesMember.email,
+        role: "employee",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // ✅ SET COOKIE (VERY IMPORTANT)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.json({
       success: true,
