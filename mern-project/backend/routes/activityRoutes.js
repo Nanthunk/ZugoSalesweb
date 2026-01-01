@@ -49,29 +49,31 @@ router.get("/employee/:name", async (req, res) => {
 });
 
 // DELETE VISIT
+// DELETE ACTIVITY
 router.delete("/:id", async (req, res) => {
   try {
-    const deleted = await Visit.findByIdAndDelete(req.params.id);
+    const deleted = await Activity.findByIdAndDelete(req.params.id);
 
     if (!deleted) {
       return res.status(404).json({
         success: false,
-        message: "Visit not found",
+        message: "Activity not found",
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
-      message: "Visit deleted successfully",
+      message: "Activity deleted successfully",
     });
   } catch (err) {
-    console.error("Delete visit error:", err);
+    console.error("Delete activity error:", err);
     res.status(500).json({
       success: false,
       message: "Delete failed",
     });
   }
 });
+
 
 
 export default router;
