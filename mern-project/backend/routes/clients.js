@@ -3,29 +3,31 @@ import Client from "../models/clientModel.js";
 
 const router = express.Router();
 
-// GET all
+// GET all clients
 router.get("/", async (req, res) => {
   try {
-    const clients = await Client.find();
+    const clients = await Client.find().sort({ date: -1 });
     res.json(clients);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET by ID
+// GET client by ID
 router.get("/:id", async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
-    if (!client) return res.status(404).json({ message: "Not found" });
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
     res.json(client);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ADD client (POST)
-router.post("/add", async (req, res) => {
+// ADD client ✅ FIXED
+router.post("/", async (req, res) => {
   try {
     const newClient = new Client({
       customerId: req.body.customerId,
@@ -35,34 +37,55 @@ router.post("/add", async (req, res) => {
       date: req.body.date,
       type: req.body.type,
       status: req.body.status,
-      followingBy: req.body.followingBy
+      followingBy: req.body.followingBy,
     });
 
     await newClient.save();
-    res.json({ message: "Client added successfully" });
+
+    res.status(201).json({
+      success: true,
+      message: "Client added successfully",
+      data: newClient,
+    });
   } catch (err) {
-    console.log(err);
+    console.error("Add client error:", err);
     res.status(500).json({ message: "Error adding client" });
   }
 });
 
-// UPDATE client (PUT)
+// UPDATE client
 router.put("/:id", async (req, res) => {
   try {
-    const updated = await Client.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const updated = await Client.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Client updated successfully",
+      data: updated,
     });
-    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE
+// DELETE client
 router.delete("/:id", async (req, res) => {
   try {
-    await Client.findByIdAndDelete(req.params.id);
-    res.json({ message: "Deleted" });
+    const deleted = await Client.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+
+    res.json({ success: true, message: "Client deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
