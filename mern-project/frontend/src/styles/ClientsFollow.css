@@ -193,6 +193,39 @@
   color: #777;
 }
 
+/* ================= STATUS COLOR BADGE ================= */
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
+/* STATUS COLORS */
+.status-badge.completed {
+  background: #219900;
+}
+
+.status-badge.processing {
+  background: #ccc903;
+  color: #000;
+}
+
+.status-badge.on-hold {
+  background: #f4d300;
+  color: #000;
+}
+
+.status-badge.rejected {
+  background: #cf0a04;
+}
+
+
 /* ================= ACTION BUTTONS ================= */
 
 /* ================= ACTION BUTTON FIX ================= */

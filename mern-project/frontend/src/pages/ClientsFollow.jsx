@@ -139,7 +139,14 @@ export default function ClientsFollow() {
                 <td>{c.date}</td>
                 <td>{c.type}</td>
                 <td>{c.followingBy}</td>
-                <td>{c.status}</td>
+                <td className="col-status">
+  <span
+    className={`status-badge ${c.status.replace(" ", "-").toLowerCase()}`}
+  >
+    {c.status}
+  </span>
+</td>
+
                 <td>
                   <button
                     onClick={() =>
