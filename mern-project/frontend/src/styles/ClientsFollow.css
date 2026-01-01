@@ -63,7 +63,8 @@
   font-weight: bold;
 }
 
-/* Status Section */
+/* ================= STATUS SECTION ================= */
+
 .status-section {
   display: flex;
   margin: 20px 0;
@@ -71,6 +72,7 @@
   justify-content: space-between;
 }
 
+/* BASE BUTTON */
 .status-btn {
   padding: 10px 22px;
   border: none;
@@ -79,56 +81,50 @@
   color: white;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-.status-btn.All {
-  background: #444;
+/* ✅ COLOR FIX USING POSITION (NO JSX CHANGE) */
+.status-btn:nth-child(1) {
+  background: #444;              /* All */
 }
 
-.status-btn.Completed {
-  background: #219900;
+.status-btn:nth-child(2) {
+  background: #219900;           /* Completed */
 }
 
-.status-btn.Processing {
-  background: #ccc903;
-  /* color: #000; yellow bg → black text */
+.status-btn:nth-child(3) {
+  background: #ccc903;           /* Processing */
+  color: #000;
 }
 
-.status-btn.OnHold {
-  background: #f4d300;
-  /* color: #000; yellow bg → black text */
+.status-btn:nth-child(4) {
+  background: #f4d300;           /* On Hold */
+  color: #000;
 }
 
-.status-btn.Rejected {
-  background: #cf0a04;
+.status-btn:nth-child(5) {
+  background: #cf0a04;           /* Rejected */
 }
 
-/* --- ACTIVE STYLES (slightly darker + scale) --- */
-
+/* ACTIVE EFFECT */
 .status-btn.active {
   transform: scale(1.05);
   box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
 }
 
-.status-btn.All.active {
-  background: #333;
+/* ACTIVE DARK COLORS */
+.status-btn:nth-child(1).active { background: #333; }
+.status-btn:nth-child(2).active { background: #1a7a00; }
+.status-btn:nth-child(3).active { background: #b2ae00; }
+.status-btn:nth-child(4).active { background: #d5bb00; }
+.status-btn:nth-child(5).active { background: #a30602; }
+
+.status-btn:hover {
+  scale: 1.09;
 }
 
-.status-btn.Completed.active {
-  background: #1a7a00;
-}
-
-.status-btn.Processing.active {
-  background: #b2ae00;
-}
-
-.status-btn.OnHold.active {
-  background: #d5bb00;
-}
-
-.status-btn.Rejected.active {
-  background: #a30602;
-}
+/* ================= SEARCH ================= */
 
 .search-box {
   width: 260px;
@@ -138,7 +134,8 @@
   border: 1px solid #ccc;
 }
 
-/* TABLE FIX */
+/* ================= TABLE ================= */
+
 .clients-table {
   width: 100%;
   border-collapse: collapse;
@@ -149,7 +146,6 @@
   margin-top: 15px;
 }
 
-/* Header styling */
 .clients-table thead {
   background: #f7f7f7;
 }
@@ -162,19 +158,17 @@
   border-bottom: 2px solid #e6e6e6;
 }
 
-/* Row styling */
 .clients-table td {
   padding: 14px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
-/* Zebra row */
 .clients-table tbody tr:nth-child(even) {
   background: #fafafa;
 }
 
-/* Column widths */
+/* COLUMN WIDTHS */
 .col-id { width: 60px; }
 .col-name { width: 220px; }
 .col-phone { width: 160px; }
@@ -187,13 +181,11 @@
   text-align: left;
 }
 
-/* Center align status + action buttons */
 .col-status,
 .col-actions {
   text-align: center;
 }
 
-/* No data styling */
 .no-data {
   text-align: center !important;
   font-size: 16px;
@@ -201,25 +193,7 @@
   color: #777;
 }
 
-  
-
-
-.status-section {
-  padding: 6px 14px;
-  border-radius: 8px;
-  color: white;
-  font-size: 12px;
-}
-
-.status-section.completed { background: #2e7734; }
-.status-section.processing { background: #f8cb17; }
-.status-section.rejected { background: #ca0502; }
-.status-section.on-hold { background: #ed8f02; }
-
-.status-btn:hover {
-  scale: calc(1.09);
-}
-
+/* ================= ACTION BUTTONS ================= */
 
 .action-buttons {
   display: flex;
@@ -254,6 +228,7 @@
   background: #b30000;
 }
 
+/* ================= MOBILE ================= */
 
 @media (max-width: 600px) {
   .client-follow-container {
@@ -309,7 +284,6 @@
     width: 100%;
   }
 
-  /* TABLE → MOBILE SAFE SCROLL */
   .clients-table {
     display: block;
     overflow-x: auto;
