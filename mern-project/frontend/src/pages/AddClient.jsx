@@ -62,6 +62,7 @@ export default function AddClient() {
         setForm(res.data);
         setEditId(res.data._id);
       })
+      .catch(() => alert("Failed to load client"))
       .finally(() => setIsLoading(false));
   }, [urlId]);
 
@@ -77,12 +78,13 @@ export default function AddClient() {
         await axios.put(`${API}/api/clients/${editId}`, form, auth);
         alert("Client updated successfully");
       } else {
-        await axios.post(`${API}/api/clients`, form, auth);
+        await axios.post(`${API}/api/clients`, form, auth); // ✅ FIXED
         alert("Client added successfully");
       }
 
       navigate("/clients-follow");
     } catch (err) {
+      console.error("Save client error:", err);
       alert("Failed to save client");
     }
   }
