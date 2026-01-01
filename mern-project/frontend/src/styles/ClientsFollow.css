@@ -204,18 +204,17 @@
   
 
 
-.status {
+.status-section {
   padding: 6px 14px;
   border-radius: 8px;
   color: white;
   font-size: 12px;
 }
 
-.status.completed { background: #2e7734; }
-.status.processing { background: #f8cb17; }
-.status.rejected { background: #ca0502; }
-.status.on-hold { background: #ed8f02; }
-
+.status-section.completed { background: #2e7734; }
+.status-section.processing { background: #f8cb17; }
+.status-section.rejected { background: #ca0502; }
+.status-section.on-hold { background: #ed8f02; }
 
 .status-btn:hover {
   scale: calc(1.09);
