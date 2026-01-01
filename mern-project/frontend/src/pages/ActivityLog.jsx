@@ -92,17 +92,29 @@ const admin = user?.role === "admin";
 
   // DELETE ACTIVITY
  const deleteActivity = async (id) => {
+  if (!id) {
+    alert("Invalid activity id");
+    return;
+  }
+
   if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
   try {
-    await api.delete(`/api/activity/${id}`);
+    const res = await api.delete(`/api/activity/${id}`);
 
-    setActivities((prev) => prev.filter((a) => a._id !== id));
+    console.log("Delete response:", res);
+
+    if (res.status === 200 || res.status === 204) {
+      setActivities((prev) => prev.filter((a) => a._id !== id));
+    } else {
+      alert("Delete failed on server");
+    }
   } catch (err) {
-    console.log("Delete error:", err);
-    alert("Failed to delete activity");
+    console.log("Delete error:", err.response || err);
+    alert(err.response?.data?.message || "Failed to delete activity");
   }
 };
+
 
   // Filters
   let filtered = activities.filter((a) => {
