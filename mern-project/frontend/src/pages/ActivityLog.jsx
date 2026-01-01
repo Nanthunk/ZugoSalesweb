@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 const ActivityLog = () => {
-  const userEmail = localStorage.getItem("email");
-  const admin = isAdmin(userEmail);
+  const user = JSON.parse(localStorage.getItem("user"));
+const admin = user?.role === "admin";
+
 
   const navigate = useNavigate();
 
@@ -90,22 +91,18 @@ const ActivityLog = () => {
   };
 
   // DELETE ACTIVITY
-  const deleteActivity = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+ const deleteActivity = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
-    try {
-      const res = await api.delete(`/api/activity/${id}`);
+  try {
+    await api.delete(`/api/activity/${id}`);
 
-      if (res.data.success) {
-        setActivities((prev) => prev.filter((a) => a._id !== id));
-      } else {
-        alert("Delete failed");
-      }
-    } catch (err) {
-      console.log("Delete error:", err);
-      alert("Something went wrong");
-    }
-  };
+    setActivities((prev) => prev.filter((a) => a._id !== id));
+  } catch (err) {
+    console.log("Delete error:", err);
+    alert("Failed to delete activity");
+  }
+};
 
   // Filters
   let filtered = activities.filter((a) => {

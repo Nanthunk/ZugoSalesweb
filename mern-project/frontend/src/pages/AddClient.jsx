@@ -1,23 +1,27 @@
-// src/pages/AddClient.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import UserMenu from "../components/UserMenu";
 import "../styles/AddClient.css";
 
+const API = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("token");
+
+const auth = {
+  headers: { Authorization: `Bearer ${token}` },
+};
+
 export default function AddClient() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  // Edit client (if editing)
   const stateClient = location.state?.client || null;
-  const urlId = searchParams.get("id"); // ?id=xxxxx
+  const urlId = searchParams.get("id");
 
   const [isLoading, setIsLoading] = useState(false);
   const [editId, setEditId] = useState(stateClient?._id || urlId || null);
 
-  // ---------- FORM STATE ----------
   const [form, setForm] = useState({
     customerId: "",
     name: "",
@@ -26,128 +30,59 @@ export default function AddClient() {
     date: "",
     type: "",
     status: "",
-    followingBy: ""
+    followingBy: "",
   });
 
   const [members, setMembers] = useState([]);
 
-  // Load Sales Members
+  // Load members
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_URL}/api/members/`)
+      .get(`${API}/api/members`, auth)
       .then((res) => setMembers(res.data))
-      .catch(() => console.log("Error loading sales members"));
+      .catch(() => console.log("Error loading members"));
   }, []);
 
-  // If client was passed from navigation (instant load)
+  // Load from state
   useEffect(() => {
     if (stateClient) {
-      setForm({
-        customerId: stateClient.customerId || "",
-        name: stateClient.name || "",
-        phone: stateClient.phone || "",
-        email: stateClient.email || "",
-        date: stateClient.date || "",
-        type: stateClient.type || "",
-        status: stateClient.status || "",
-        followingBy: stateClient.followingBy || ""
-      });
-      setEditId(stateClient._id || editId);
-
-      try {
-        const key = "viewedClients";
-        const raw = localStorage.getItem(key);
-        const arr = raw ? JSON.parse(raw) : [];
-        const filtered = arr.filter((it) => it.id !== (stateClient._id || ""));
-        filtered.unshift({
-          id: stateClient._id,
-          name: stateClient.name,
-          viewedAt: new Date().toISOString()
-        });
-        localStorage.setItem(key, JSON.stringify(filtered.slice(0, 50)));
-      } catch (e) {
-        console.error("Error marking viewed client:", e);
-      }
+      setForm(stateClient);
+      setEditId(stateClient._id);
     }
   }, [stateClient]);
 
-  // If page was refreshed → fetch by ID
+  // Load by URL ID
   useEffect(() => {
-    async function fetchClient() {
-      if (!urlId) return;
-      setIsLoading(true);
+    if (!urlId || stateClient) return;
 
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/clients/${urlId}`
-        );
-        const c = res.data;
+    setIsLoading(true);
+    axios
+      .get(`${API}/api/clients/${urlId}`, auth)
+      .then((res) => {
+        setForm(res.data);
+        setEditId(res.data._id);
+      })
+      .finally(() => setIsLoading(false));
+  }, [urlId]);
 
-        setForm({
-          customerId: c.customerId || "",
-          name: c.name || "",
-          phone: c.phone || "",
-          email: c.email || "",
-          date: c.date || "",
-          type: c.type || "",
-          status: c.status || "",
-          followingBy: c.followingBy || ""
-        });
-
-        setEditId(c._id);
-
-        try {
-          const key = "viewedClients";
-          const raw = localStorage.getItem(key);
-          const arr = raw ? JSON.parse(raw) : [];
-          const filtered = arr.filter((it) => it.id !== (c._id || ""));
-          filtered.unshift({
-            id: c._id,
-            name: c.name,
-            viewedAt: new Date().toISOString()
-          });
-          localStorage.setItem(key, JSON.stringify(filtered.slice(0, 50)));
-        } catch (e) {
-          console.error("Error marking viewed client:", e);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        alert("Could not load client.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (!stateClient && urlId) fetchClient();
-  }, [urlId, stateClient]);
-
-  // ---------- INPUT CHANGE ----------
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // ---------- FORM SUBMIT ----------
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
       if (editId) {
-        await axios.put(
-          `${import.meta.env.VITE_API_URL}/clients/${editId}`,
-          form
-        );
+        await axios.put(`${API}/api/clients/${editId}`, form, auth);
         alert("Client updated successfully");
       } else {
-        await axios.post(
-          `${import.meta.env.VITE_API_URL}/clients/add`,
-          form
-        );
+        await axios.post(`${API}/api/clients`, form, auth);
         alert("Client added successfully");
       }
 
       navigate("/clients-follow");
     } catch (err) {
-      console.error("Submit error:", err);
       alert("Failed to save client");
     }
   }

@@ -4,6 +4,9 @@ import axios from "axios";
 import UserMenu from "../components/UserMenu";
 import "../styles/ClientsFollow.css";
 
+const API = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("token");
+
 export default function ClientsFollow() {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
@@ -11,58 +14,49 @@ export default function ClientsFollow() {
   const [sortDate, setSortDate] = useState("");
   const navigate = useNavigate();
 
+  // 🔹 LOAD CLIENTS
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_URL}/clients`)
+      .get(`${API}/api/clients`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => setClients(res.data))
       .catch((err) => console.log(err));
   }, []);
 
-  // -------------------- FILTER LOGIC ---------------------
+  // 🔹 FILTER
   const filtered = clients.filter((c) => {
-    const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = c.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
     const matchesStatus =
       statusFilter === "All" ? true : c.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
-  // -------------------- SORTED + FILTERED COMBINATION ---------------------
   let dataToShow = filtered;
 
   if (sortDate) {
-    dataToShow = filtered.filter((item) => item.date === sortDate);
+    dataToShow = filtered.filter(
+      (item) => item.date === sortDate
+    );
   }
 
-  // -------------------- DELETE CLIENT ---------------------
+  // 🔹 DELETE CLIENT
   const deleteClient = async (id) => {
-    if (!id) {
-      alert("Delete failed: missing id");
-      return;
-    }
-
     if (!window.confirm("Are you sure you want to delete this client?")) return;
 
     try {
-      const res = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/clients/${id}`
-      );
+      await axios.delete(`${API}/api/clients/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      if (res.status === 200 || res.status === 204) {
-        setClients((prev) => prev.filter((c) => c._id !== id));
-      } else {
-        alert("Delete failed, check server logs");
-      }
+      setClients((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
-      console.error("Delete error:", err);
-      alert("Delete failed. Check console.");
-    }
-  };
-
-  const handleSortByDate = () => {
-    if (!sortDate) {
-      alert("Please select a date!");
-      return;
+      console.log("Delete error:", err);
+      alert("Delete failed");
     }
   };
 
@@ -78,10 +72,7 @@ export default function ClientsFollow() {
 
         <div className="top-controls">
           <div className="sort-date-box">
-            <button className="sort-btn" onClick={handleSortByDate}>
-              Sort
-            </button>
-
+            <button className="sort-btn">Sort</button>
             <input
               type="date"
               className="date-box"
@@ -99,7 +90,6 @@ export default function ClientsFollow() {
         </div>
       </div>
 
-      {/* Search Box */}
       <input
         className="search-box"
         placeholder="Search"
@@ -107,12 +97,11 @@ export default function ClientsFollow() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* Status Buttons */}
       <div className="status-section">
         {["All", "Completed", "Processing", "On Hold", "Rejected"].map((st) => (
           <button
             key={st}
-            className={`status-btn ${st.replace(" ", "")} ${
+            className={`status-btn ${
               st === statusFilter ? "active" : ""
             }`}
             onClick={() => setStatusFilter(st)}
@@ -122,54 +111,37 @@ export default function ClientsFollow() {
         ))}
       </div>
 
-      {/* TABLE */}
       <table className="clients-table">
         <thead>
           <tr>
-            <th className="col-id">ID</th>
-            <th className="col-name">Name</th>
-            <th className="col-phone">Phone Number</th>
-            <th className="col-date">Date</th>
-            <th className="col-type">Business</th>
-            <th className="col-follow">Following By</th>
-            <th className="col-status">Status</th>
-            <th className="col-actions">Actions</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Date</th>
+            <th>Business</th>
+            <th>Following By</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
           {dataToShow.length === 0 ? (
             <tr>
-              <td colSpan={8} className="no-data">
-                No clients found.
-              </td>
+              <td colSpan={8}>No clients found.</td>
             </tr>
           ) : (
-            dataToShow.map((c, index) => (
-              <tr key={index}>
-                <td className="col-id">{c.customerId}</td>
-                <td className="col-name">{c.name}</td>
-                <td className="col-phone">{c.phone}</td>
-                <td className="col-date">{c.date}</td>
-                <td className="col-type">{c.type}</td>
-
-                <td className="col-follow">
-                  {c.followingBy ? c.followingBy : "—"}
-                </td>
-
-                <td className="col-status">
-                  <span
-                    className={`status ${c.status
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    {c.status}
-                  </span>
-                </td>
-
-                <td className="col-actions action-buttons">
+            dataToShow.map((c) => (
+              <tr key={c._id}>
+                <td>{c.customerId}</td>
+                <td>{c.name}</td>
+                <td>{c.phone}</td>
+                <td>{c.date}</td>
+                <td>{c.type}</td>
+                <td>{c.followingBy}</td>
+                <td>{c.status}</td>
+                <td>
                   <button
-                    className="edit-btn"
                     onClick={() =>
                       navigate(`/add-client?id=${c._id}`, {
                         state: { client: c },
@@ -179,10 +151,7 @@ export default function ClientsFollow() {
                     Edit
                   </button>
 
-                  <button
-                    className="delete-btn"
-                    onClick={() => deleteClient(c._id)}
-                  >
+                  <button onClick={() => deleteClient(c._id)}>
                     Remove
                   </button>
                 </td>

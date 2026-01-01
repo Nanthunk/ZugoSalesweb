@@ -21,26 +21,19 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/api/users/admin-login`,
-  { email, password }
-);
+        `${import.meta.env.VITE_API_URL}/api/users/admin-login`,
+        { email, password }
+      );
 
+      // ✅ FIX: save token + user
+      localStorage.clear();
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...res.data.admin, role: "admin" })
+      );
 
-      if (res.data?.success) {
-        const adminUser = {
-          _id: res.data.admin?._id || "admin",
-          name: "Admin",
-          email,
-          role: "admin",
-        };
-
-        localStorage.clear();
-        localStorage.setItem("user", JSON.stringify(adminUser));
-
-        navigate("/dashboard", { replace: true });
-      } else {
-        setError("Admin login failed");
-      }
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError("Invalid admin credentials");
     }
@@ -57,38 +50,28 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/api/users/employee-login`,
-  { email }
-);
+        `${import.meta.env.VITE_API_URL}/api/users/employee-login`,
+        { email }
+      );
 
+      // ✅ FIX: save token + user
+      localStorage.clear();
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...res.data.employee, role: "employee" })
+      );
 
-      if (res.data?.success && res.data?.employee) {
-        const employee = {
-          ...res.data.employee,
-          role: "employee",
-        };
-
-        localStorage.clear();
-        localStorage.setItem("user", JSON.stringify(employee));
-
-        navigate("/dashboard", { replace: true });
-      } else {
-        setError("Employee login failed");
-      }
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err?.response?.data?.message || "Employee login failed");
+      setError("Employee login failed");
     }
   };
 
-  /* =========================
-        SUBMIT
-  ========================= */
   const onSubmit = (e) => {
     e.preventDefault();
     setError("");
-
-    if (mode === "admin") handleAdminLogin();
-    else handleEmployeeLogin();
+    mode === "admin" ? handleAdminLogin() : handleEmployeeLogin();
   };
 
   return (
