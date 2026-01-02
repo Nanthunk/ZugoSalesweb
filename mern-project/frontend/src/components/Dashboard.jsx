@@ -146,9 +146,10 @@ export default function Dashboard() {
                 <td>{client.date}</td>
                 <td>{client.type}</td>
                 <td>
-                  <span className={`status ${client.status.toLowerCase()}`}>
-                    {client.status}
-                  </span>
+                  <span className={`status ${client.status.toLowerCase().replace(" ", "-")}`}>
+  {client.status}
+</span>
+
                 </td>
               </tr>
             ))}
