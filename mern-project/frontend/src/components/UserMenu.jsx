@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/UserMenu.css";
-import api from "../api/axios";
-
-
 
 const UserMenu = () => {
   const navigate = useNavigate();
@@ -13,11 +10,12 @@ const UserMenu = () => {
   const [user, setUser] = useState(null);
   const [hasImage, setHasImage] = useState(false);
 
-  // 🔥 LOAD USER + REFRESH FROM BACKEND
+  /* =========================
+     LOAD USER FROM STORAGE
+  ========================= */
   useEffect(() => {
-    const role = localStorage.getItem("role");
-
     let storedUser = null;
+
     try {
       storedUser = JSON.parse(localStorage.getItem("user"));
     } catch (err) {
@@ -25,48 +23,50 @@ const UserMenu = () => {
       storedUser = null;
     }
 
-    // 🟢 SET USER FROM STORAGE FIRST
     if (storedUser) {
       setUser(storedUser);
-      setHasImage(!!storedUser?.photoUrl);
+      setHasImage(!!storedUser?.image);
     }
 
-    // 🔥 REFRESH EMPLOYEE DETAILS (NOT ADMIN)
+    /* =========================
+       REFRESH USER FROM BACKEND
+       (USING /me ROUTE)
+    ========================= */
     const refreshUser = async () => {
-      if (!storedUser?.email) return;
-      if (role === "admin") return;
-
       try {
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/users/employee-login`,
-          { email: storedUser.email }
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/users/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
-        if (res?.data?.success && res.data.employee) {
-          const updatedUser = {
-            ...res.data.employee,
-            photoUrl: res.data.employee.photoUrl || "",
-          };
-
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-          setUser(updatedUser);
-          setHasImage(!!updatedUser.photoUrl);
+        if (res?.data?.user) {
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+          setUser(res.data.user);
+          setHasImage(!!res.data.user?.image);
         }
       } catch (err) {
-        console.error("Failed to refresh user:", err);
+        console.error("User refresh failed:", err);
       }
     };
 
     refreshUser();
   }, []);
 
-  // 🔥 NAVIGATE TO LOGIN
+  /* =========================
+     NAVIGATION
+  ========================= */
   const goToLogin = () => {
     setOpen(false);
     navigate("/login");
   };
 
-  // 🔥 LOGOUT
   const logout = () => {
     localStorage.clear();
     setUser(null);
@@ -75,7 +75,9 @@ const UserMenu = () => {
     navigate("/login");
   };
 
-  // 🔥 AVATAR LETTER LOGIC
+  /* =========================
+     AVATAR LETTER
+  ========================= */
   const avatarLetter = user?.name
     ? user.name.charAt(0).toUpperCase()
     : user?.email
@@ -95,9 +97,9 @@ const UserMenu = () => {
             onClick={() => setOpen(!open)}
             title={user?.email || "Account"}
           >
-            {hasImage && user?.photoUrl ? (
+            {hasImage && user?.image ? (
               <img
-                src={user.photoUrl}
+                src={`${import.meta.env.VITE_API_URL}${user.image}`}
                 alt="avatar"
                 className="user-avatar"
                 onError={() => setHasImage(false)}

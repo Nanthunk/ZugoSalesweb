@@ -108,7 +108,7 @@ export default function Dashboard() {
         <div>
           <p>{getCurrentDate()}</p>
           <h2>Welcome, {displayName}</h2>
-          <h3>{email}</h3>
+          <h3>{user?.email}</h3>
           <p>{role}</p>
           <button className="get-started-btn">Get Started</button>
         </div>
