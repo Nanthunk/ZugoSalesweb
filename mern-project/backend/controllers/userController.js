@@ -123,6 +123,7 @@ export const getMe = async (req, res) => {
           name: "Zugo Private Limited",
           email: req.user.email,
           role: "admin",
+          image: "/zugo.png",
         },
       });
     }
@@ -144,7 +145,7 @@ export const getMe = async (req, res) => {
           _id: employee._id,
           name: employee.name,        // 🔥 THIS FIXES WELCOME NAME
           email: employee.email,
-          role: "employee",
+          role: employee.role,
           image: employee.image || "",
         },
       });
