@@ -1,4 +1,3 @@
-// backend/controllers/userController.js
 import User from "../models/userModel.js";
 import SalesMember from "../models/SalesMember.js";
 import jwt from "jsonwebtoken";
@@ -28,14 +27,12 @@ export const adminLogin = async (req, res) => {
     });
   }
 
-  // ✅ CREATE TOKEN
   const token = jwt.sign(
     { email, role: "admin" },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 
-  // ✅ SET COOKIE (VERY IMPORTANT)
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,
@@ -44,15 +41,14 @@ export const adminLogin = async (req, res) => {
   });
 
   return res.json({
-  success: true,
-  token,
-  user: {
-    email,
-    name: "Admin",
-    role: "admin",
-  },
-});
-
+    success: true,
+    token,
+    user: {
+      name: "Zugo Private Limited",
+      email,
+      role: "admin",
+    },
+  });
 };
 
 /* =========================
@@ -78,7 +74,6 @@ export const employeeLogin = async (req, res) => {
       });
     }
 
-    // ✅ CREATE TOKEN
     const token = jwt.sign(
       {
         id: salesMember._id,
@@ -89,7 +84,6 @@ export const employeeLogin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // ✅ SET COOKIE (VERY IMPORTANT)
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
@@ -98,18 +92,70 @@ export const employeeLogin = async (req, res) => {
     });
 
     return res.json({
-  success: true,
-  token,
-  user: {
-    _id: salesMember._id,
-    name: salesMember.name,
-    email: salesMember.email,
-    role: "employee",
-  },
-});
-
+      success: true,
+      token,
+      user: {
+        _id: salesMember._id,
+        name: salesMember.name,
+        email: salesMember.email,
+        role: "employee",
+      },
+    });
   } catch (err) {
     console.error("Employee login error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+/* =========================
+   GET LOGGED IN USER (🔥 FIX)
+========================= */
+export const getMe = async (req, res) => {
+  try {
+    // ===== ADMIN =====
+    if (req.user.role === "admin") {
+      return res.json({
+        success: true,
+        user: {
+          name: "Zugo Private Limited",
+          email: req.user.email,
+          role: "admin",
+        },
+      });
+    }
+
+    // ===== EMPLOYEE =====
+    if (req.user.role === "employee") {
+      const employee = await SalesMember.findById(req.user.id);
+
+      if (!employee) {
+        return res.status(404).json({
+          success: false,
+          message: "Employee not found",
+        });
+      }
+
+      return res.json({
+        success: true,
+        user: {
+          _id: employee._id,
+          name: employee.name,        // 🔥 THIS FIXES WELCOME NAME
+          email: employee.email,
+          role: "employee",
+          image: employee.image || "",
+        },
+      });
+    }
+
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
+  } catch (err) {
+    console.error("GET ME ERROR:", err);
     return res.status(500).json({
       success: false,
       message: "Server error",

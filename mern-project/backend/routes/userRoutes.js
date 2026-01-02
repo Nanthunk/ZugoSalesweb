@@ -1,17 +1,17 @@
 import express from "express";
-import { adminLogin, employeeLogin } from "../controllers/userController.js";
+import {
+  adminLogin,
+  employeeLogin,
+  getMe,
+} from "../controllers/userController.js";
 import { requireSignIn } from "../middleware/authMiddleware.js";
-
 
 const router = express.Router();
 
 router.post("/admin-login", adminLogin);
 router.post("/employee-login", employeeLogin);
-router.get("/me", requireSignIn, (req, res) => {
-  res.json({
-    success: true,
-    user: req.user,
-  });
-});
+
+// 🔥 FIXED PROFILE ROUTE
+router.get("/me", requireSignIn, getMe);
 
 export default router;
