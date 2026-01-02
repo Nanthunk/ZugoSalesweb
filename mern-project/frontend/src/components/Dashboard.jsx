@@ -1,8 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import UserMenu from "../components/UserMenu.jsx";
 import api from "../api/axios";
-
 
 /* ================= HELPERS ================= */
 
@@ -37,20 +35,20 @@ export default function Dashboard() {
   const displayName =
     user?.role === "admin"
       ? "Zugo Private Limited"
-      : user?.name || "Employee";
+      : user?.name && user.name.trim() !== ""
+      ? user.name
+      : "Employee";
 
   const email = user?.email || "N/A";
   const role = user?.role ? user.role.toUpperCase() : "N/A";
 
   /* ===== Fetch Clients ===== */
-  
   useEffect(() => {
-  api
-    .get("/api/clients")
-    .then((res) => setClients(res.data))
-    .catch((err) => console.log(err));
-}, []);
-
+    api
+      .get("/api/clients")
+      .then((res) => setClients(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   /* ===== Sort Clients ===== */
   useEffect(() => {
@@ -146,10 +144,13 @@ export default function Dashboard() {
                 <td>{client.date}</td>
                 <td>{client.type}</td>
                 <td>
-                  <span className={`status ${client.status.toLowerCase().replace(" ", "-")}`}>
-  {client.status}
-</span>
-
+                  <span
+                    className={`status ${client.status
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
+                    {client.status}
+                  </span>
                 </td>
               </tr>
             ))}
