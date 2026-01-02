@@ -4,6 +4,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import upload from "../middleware/upload.js";
+import { requireSignIn, isAdmin } from "../middleware/authMiddleware.js";
+
 
 const router = express.Router();
 
@@ -36,6 +38,11 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+router.get("/admins", requireSignIn, isAdmin, (req, res) => {
+  res.json({ success: true });
+});
+
 
 
 // ADD MEMBER (admin only)

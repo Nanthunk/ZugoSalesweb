@@ -44,13 +44,15 @@ export const adminLogin = async (req, res) => {
   });
 
   return res.json({
-    success: true,
+  success: true,
+  token,
+  user: {
+    email,
+    name: "Admin",
     role: "admin",
-    user: {
-      email,
-      name: "Admin",
-    },
-  });
+  },
+});
+
 };
 
 /* =========================
@@ -96,15 +98,16 @@ export const employeeLogin = async (req, res) => {
     });
 
     return res.json({
-      success: true,
-      role: "employee",
-      employee: {
-        _id: salesMember._id,
-        name: salesMember.name,
-        email: salesMember.email,
-        role: salesMember.role,
-      },
-    });
+  success: true,
+  token,
+  user: {
+    _id: salesMember._id,
+    name: salesMember.name,
+    email: salesMember.email,
+    role: "employee",
+  },
+});
+
   } catch (err) {
     console.error("Employee login error:", err);
     return res.status(500).json({
