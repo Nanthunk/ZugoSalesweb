@@ -53,8 +53,9 @@
   color: white;
 }
 
-.status.completed { background: #46c2aa; }
-.status.processing { background: #b39ddb; }
+.status.completed { background: #46c248; }
+.status.processing { background: #9dd7db; }
+.status.on-hold { background: #ffb74d; }
 .status.rejected { background: #ef5350; }
 
 /* ================= HEADER & USER MENU ================= */
