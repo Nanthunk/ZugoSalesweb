@@ -33,7 +33,7 @@ const upload = multer({ storage });
 ====================== */
 router.post("/", upload.single("photo"), async (req, res) => {
   console.log("REQ BODY:", req.body);
-  console.log("REQ FILE:", req.file); // 🔥 THIS LINE
+  console.log("REQ FILE:", req.file);
 
   try {
     if (!req.file) {
@@ -44,6 +44,11 @@ router.post("/", upload.single("photo"), async (req, res) => {
       employeeName: req.body.employeeName,
       clientName: req.body.clientName,
       clientPhone: req.body.clientPhone,
+
+      /* ===== NEW SAVED VALUES ===== */
+      clientFeedback: req.body.clientFeedback,
+      nextVisit: req.body.nextVisit,
+
       lat: req.body.lat,
       lng: req.body.lng,
       photo: req.file.filename,
@@ -57,7 +62,6 @@ router.post("/", upload.single("photo"), async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 /* ======================
    GET VISITS BY EMPLOYEE
@@ -86,7 +90,6 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit not found" });
     }
 
-    // delete image
     const imagePath = path.join(uploadDir, visit.photo);
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
@@ -103,7 +106,5 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 });
-
-
 
 export default router;

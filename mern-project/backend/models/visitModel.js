@@ -6,6 +6,10 @@ const visitSchema = new mongoose.Schema(
     clientName: { type: String, required: true },
     clientPhone: { type: String, required: true },
 
+    /* ===== NEW FIELDS ===== */
+    clientFeedback: { type: String },
+    nextVisit: { type: String },
+
     lat: Number,
     lng: Number,
 
