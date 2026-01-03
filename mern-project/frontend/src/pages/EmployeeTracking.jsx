@@ -53,6 +53,11 @@ export default function EmployeeTracking() {
   const [camError, setCamError] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+
+  /* ===== NEW ADD-ON STATES ===== */
+  const [clientFeedback, setClientFeedback] = useState("");
+  const [nextVisit, setNextVisit] = useState("");
+
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
@@ -151,6 +156,8 @@ export default function EmployeeTracking() {
     setImage(null);
     setClientName("");
     setClientPhone("");
+    setClientFeedback("");
+    setNextVisit("");
   };
 
   const capturePhoto = () => {
@@ -173,12 +180,6 @@ export default function EmployeeTracking() {
     setImage(canvas.toDataURL("image/jpeg", 0.6));
   };
 
-  const [toast, setToast] = useState({
-    show: false,
-    message: "",
-    type: "",
-  });
-
   /* ======================
      SAVE IMAGE + DETAILS
   ====================== */
@@ -198,6 +199,11 @@ export default function EmployeeTracking() {
       formData.append("employeeName", employeeName);
       formData.append("clientName", clientName);
       formData.append("clientPhone", clientPhone);
+
+      /* ===== NEW ADD-ONS ===== */
+      formData.append("clientFeedback", clientFeedback);
+      formData.append("nextVisit", nextVisit);
+
       formData.append("lat", lat);
       formData.append("lng", lng);
 
@@ -220,10 +226,6 @@ export default function EmployeeTracking() {
   return (
     <div className="tracking-container">
       <UserMenu />
-
-      {toast.show && (
-        <div className={`toast ${toast.type}`}>{toast.message}</div>
-      )}
 
       <h2>Employee Tracking</h2>
       <div id="map" className="map-container"></div>
@@ -256,11 +258,26 @@ export default function EmployeeTracking() {
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
+
+                {/* ===== NEW INPUTS ADDED ===== */}
+                <textarea
+                  placeholder="Client Feedback Message"
+                  value={clientFeedback}
+                  onChange={(e) => setClientFeedback(e.target.value)}
+                />
+
+                <input
+                  type="date"
+                  placeholder="Next Visit"
+                  value={nextVisit}
+                  onChange={(e) => setNextVisit(e.target.value)}
+                />
+
                 <input value={selectedEmployee} disabled />
+
                 <button onClick={savePhoto} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
-                {saveMessage && <p>{saveMessage}</p>}
               </>
             )}
           </div>
