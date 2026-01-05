@@ -40,7 +40,6 @@ const EmployeeActivity = () => {
     localStorage.removeItem("user");
   }
 
-  // Fetch activity records for this employee
   useEffect(() => {
     axios
       .get(
@@ -59,7 +58,6 @@ const EmployeeActivity = () => {
       });
   }, [decodedName]);
 
-  // Apply month/year filters
   useEffect(() => {
     let temp = [...records];
 
@@ -158,7 +156,6 @@ const EmployeeActivity = () => {
         </select>
       </div>
 
-      {/* Stats */}
       <div className="stats-box" style={{ marginTop: "25px" }}>
         <h3>Statistics</h3>
         <p>
@@ -172,44 +169,11 @@ const EmployeeActivity = () => {
         )}
       </div>
 
-      {/* Graph */}
       <div className="graph-box" style={{ width: "70%", marginTop: "30px" }}>
         {filteredRecords.length > 0 ? (
           <Bar data={chartData} />
         ) : (
           <p>No activity found for this filter.</p>
-        )}
-      </div>
-
-      {/* Activity List */}
-      <div className="activity-list" style={{ marginTop: "30px" }}>
-        <h3>Activity Records</h3>
-        <ul>
-          {filteredRecords.map((r, i) => (
-            <li key={i}>
-              {r.month}/{r.year} — Clients: <b>{r.clients}</b>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Leaderboard */}
-      <div className="leaderboard-box">
-        <h3>Top Performance (Leaderboard)</h3>
-        {leaderboard.length === 0 ? (
-          <p>No data for leaderboard yet.</p>
-        ) : (
-          <ol>
-            {leaderboard.map((r, i) => (
-              <li key={i}>
-                <span className="rank">{i + 1}.</span>
-                <span className="month">
-                  {r.month}/{r.year}
-                </span>
-                <span className="score">{r.clients} clients</span>
-              </li>
-            ))}
-          </ol>
         )}
       </div>
 
@@ -246,6 +210,16 @@ const EmployeeActivity = () => {
                 <div className="visit-info">
                   <p><b>Client:</b> {v.clientName}</p>
                   <p><b>Phone:</b> {v.clientPhone}</p>
+
+                  {/* ✅ NEW DISPLAY FIELDS */}
+                  {v.clientFeedback && (
+                    <p><b>Feedback:</b> {v.clientFeedback}</p>
+                  )}
+
+                  {v.nextVisit && (
+                    <p><b>Next Visit:</b> {v.nextVisit}</p>
+                  )}
+
                   <p className="date">
                     {new Date(v.createdAt).toLocaleString()}
                   </p>
