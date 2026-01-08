@@ -2,20 +2,58 @@ import mongoose from "mongoose";
 
 const visitSchema = new mongoose.Schema(
   {
-    employeeName: { type: String, required: true },
-    clientName: { type: String, required: true },
-    clientPhone: { type: String, required: true },
+    employeeName: {
+      type: String,
+      required: true,
+    },
+
+    clientName: {
+      type: String,
+      required: true,
+    },
+
+    clientPhone: {
+      type: String,
+      required: true,
+    },
 
     /* ===== NEW FIELDS ===== */
-    clientFeedback: { type: String },
-    nextVisit: { type: String },
+    clientFeedback: {
+      type: String,
+      default: "",
+    },
 
-    lat: Number,
-    lng: Number,
+    nextVisit: {
+      type: String,
+      default: "",
+    },
 
-    photo: { type: String, required: true },
+    /* ===== LOCATION ===== */
+    lat: {
+      type: Number,
+      required: true,
+    },
+
+    lng: {
+      type: Number,
+      required: true,
+    },
+
+    /* ===== IMAGE ===== */
+    photo: {
+      type: String, // Cloudinary URL OR local filename
+      required: true,
+    },
+
+    /* ===== IMPORTANT FOR ADMIN FILTER ===== */
+    visitDate: {
+      type: String,
+      default: () => new Date().toISOString().split("T")[0],
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model("Visit", visitSchema);

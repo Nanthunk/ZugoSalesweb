@@ -1,69 +1,51 @@
 import express from "express";
-import multer from "multer";
-import path from "path";
-import fs from "fs";
 import Visit from "../models/visitModel.js";
+import uploadVisitImage from "../middleware/uploadVisitImage.js";
+import { createVisit } from "../controllers/visitController.js";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
 /* ======================
-   ENSURE UPLOAD FOLDER
+   SAVE VISIT (CLOUDINARY)
 ====================== */
-const uploadDir = "uploads/visits";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+router.post(
+  "/",
+  uploadVisitImage.single("photo"), // frontend field = photo
+  async (req, res) => {
+    console.log("REQ BODY:", req.body);
+    console.log("REQ FILE:", req.file);
 
-/* ======================
-   MULTER CONFIG
-====================== */
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-  const ext = path.extname(file.originalname) || ".jpg";
-  cb(null, `${Date.now()}${ext}`);
-},
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Image missing" });
+      }
 
-});
+      const visit = new Visit({
+        employeeName: req.body.employeeName,
+        clientName: req.body.clientName,
+        clientPhone: req.body.clientPhone,
 
-const upload = multer({ storage });
+        /* ===== NEW SAVED VALUES ===== */
+        clientFeedback: req.body.clientFeedback,
+        nextVisit: req.body.nextVisit,
 
-/* ======================
-   SAVE VISIT (CAMERA)
-====================== */
-router.post("/", upload.single("photo"), async (req, res) => {
-  console.log("REQ BODY:", req.body);
-  console.log("REQ FILE:", req.file);
+        lat: req.body.lat,
+        lng: req.body.lng,
 
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Image missing" });
+        /* ✅ CLOUDINARY URL */
+        photo: req.file.path,
+      });
+
+      await visit.save();
+
+      res.status(200).json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
     }
-
-    const visit = new Visit({
-      employeeName: req.body.employeeName,
-      clientName: req.body.clientName,
-      clientPhone: req.body.clientPhone,
-
-      /* ===== NEW SAVED VALUES ===== */
-      clientFeedback: req.body.clientFeedback,
-      nextVisit: req.body.nextVisit,
-
-      lat: req.body.lat,
-      lng: req.body.lng,
-      photo: req.file.filename,
-    });
-
-    await visit.save();
-
-    res.status(200).json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
   }
-});
+);
 
 /* ======================
    GET VISITS BY EMPLOYEE
@@ -82,7 +64,7 @@ router.get("/employee/:name", async (req, res) => {
 });
 
 /* ======================
-   DELETE VISIT
+   DELETE VISIT (CLOUDINARY)
 ====================== */
 router.delete("/:id", async (req, res) => {
   try {
@@ -92,10 +74,13 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit not found" });
     }
 
-    const imagePath = path.join(uploadDir, visit.photo);
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
+    /* 🔥 Remove from Cloudinary */
+    const publicId = visit.photo
+      .split("/")
+      .pop()
+      .split(".")[0];
+
+    await cloudinary.uploader.destroy(`visits/${publicId}`);
 
     await Visit.findByIdAndDelete(req.params.id);
 
