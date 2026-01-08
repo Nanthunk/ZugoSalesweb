@@ -1,7 +1,6 @@
 import express from "express";
 import Visit from "../models/visitModel.js";
 import uploadVisitImage from "../middleware/uploadVisitImage.js";
-import { createVisit } from "../controllers/visitController.js";
 import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
