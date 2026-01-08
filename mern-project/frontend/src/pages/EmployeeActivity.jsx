@@ -42,7 +42,7 @@ const EmployeeActivity = () => {
 
   useEffect(() => {
     axios
-      .get(
+      .get( 
         `https://zugo-backend-trph.onrender.com/api/activity/employee/${decodedName}`
       )
       .then((res) => {

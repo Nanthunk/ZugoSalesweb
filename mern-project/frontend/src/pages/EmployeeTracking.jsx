@@ -195,7 +195,7 @@ export default function EmployeeTracking() {
       const blob = await (await fetch(image)).blob();
 
       const formData = new FormData();
-      formData.append("photo", blob);
+      formData.append("photo", blob, "visit.jpg");
       formData.append("employeeName", employeeName);
       formData.append("clientName", clientName);
       formData.append("clientPhone", clientPhone);
