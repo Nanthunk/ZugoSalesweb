@@ -204,9 +204,10 @@ const EmployeeActivity = () => {
             .map((v) => (
               <div className="visit-card" key={v._id}>
                 <img
-                  src={`https://zugo-backend-trph.onrender.com/uploads/visits/${v.photo}`}
-                  alt="visit"
+                   src={v.photo}
+                   alt="visit"
                 />
+
                 <div className="visit-info">
                   <p><b>Client:</b> {v.clientName}</p>
                   <p><b>Phone:</b> {v.clientPhone}</p>
