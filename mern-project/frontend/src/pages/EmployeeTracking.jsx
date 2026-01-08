@@ -183,7 +183,7 @@ export default function EmployeeTracking() {
       formData.append("lng", lng);
 
       await axios.post(
-        "https://zugo-backend-trph.onrender.com/api/visits/add",
+        "https://zugo-backend-trph.onrender.com/api/visits",
         formData
       );
 
