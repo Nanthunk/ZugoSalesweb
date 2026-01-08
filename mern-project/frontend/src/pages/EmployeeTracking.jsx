@@ -46,7 +46,6 @@ export default function EmployeeTracking() {
   ====================== */
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
-  const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(employeeName);
   const [cameraOn, setCameraOn] = useState(false);
   const [image, setImage] = useState(null);
@@ -54,12 +53,10 @@ export default function EmployeeTracking() {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
 
-  /* ===== NEW ADD-ON STATES ===== */
   const [clientFeedback, setClientFeedback] = useState("");
   const [nextVisit, setNextVisit] = useState("");
 
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
 
   /* ======================
      INIT MAP
@@ -82,11 +79,15 @@ export default function EmployeeTracking() {
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+
         setLat(latitude);
         setLng(longitude);
 
         if (!employeeMarkerRef.current) {
-          employeeMarkerRef.current = L.marker([latitude, longitude], { icon: markerIcon })
+          employeeMarkerRef.current = L.marker(
+            [latitude, longitude],
+            { icon: markerIcon }
+          )
             .addTo(mapRef.current)
             .bindPopup(`<strong>${selectedEmployee}</strong>`)
             .openPopup();
@@ -102,37 +103,6 @@ export default function EmployeeTracking() {
 
     return () => navigator.geolocation.clearWatch(watchId);
   }, [isAdmin, selectedEmployee]);
-
-  /* ======================
-     ADMIN MARKERS
-  ====================== */
-  useEffect(() => {
-    if (!isAdmin) return;
-
-    const markersRef = { current: [] };
-
-    axios
-      .get("https://zugo-backend-trph.onrender.com/api/employee-locations")
-      .then((res) => {
-        markersRef.current.forEach((m) => mapRef.current.removeLayer(m));
-        markersRef.current = [];
-
-        res.data.forEach((emp) => {
-          if (!emp.lat || !emp.lng) return;
-
-          const marker = L.marker([emp.lat, emp.lng], { icon: markerIcon })
-            .addTo(mapRef.current)
-            .bindPopup(`<strong>${emp.name}</strong>`);
-
-          markersRef.current.push(marker);
-        });
-
-        if (res.data.length) {
-          mapRef.current.setView([res.data[0].lat, res.data[0].lng], 10);
-        }
-      })
-      .catch(console.error);
-  }, [isAdmin]);
 
   /* ======================
      CAMERA FUNCTIONS
@@ -161,6 +131,11 @@ export default function EmployeeTracking() {
   };
 
   const capturePhoto = () => {
+    if (!lat || !lng) {
+      alert("Location not ready. Please wait...");
+      return;
+    }
+
     const canvas = canvasRef.current;
     const video = videoRef.current;
     const ctx = canvas.getContext("2d");
@@ -174,10 +149,10 @@ export default function EmployeeTracking() {
 
     ctx.fillStyle = "#fff";
     ctx.font = "16px Arial";
-    ctx.fillText(`📍 ${lat}, ${lng}`, 10, canvas.height - 45);
+    ctx.fillText(`📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`, 10, canvas.height - 45);
     ctx.fillText(`⏰ ${new Date().toLocaleString()}`, 10, canvas.height - 20);
 
-    setImage(canvas.toDataURL("image/jpeg", 0.6));
+    setImage(canvas.toDataURL("image/jpeg", 0.7));
   };
 
   /* ======================
@@ -195,29 +170,28 @@ export default function EmployeeTracking() {
       const blob = await (await fetch(image)).blob();
 
       const formData = new FormData();
-      formData.append("photo", blob, "visit.jpg");
+
+      // ✅ IMPORTANT FIX — field name MUST be "image"
+      formData.append("image", blob, "visit.jpg");
+
       formData.append("employeeName", employeeName);
       formData.append("clientName", clientName);
       formData.append("clientPhone", clientPhone);
-
-      /* ===== NEW ADD-ONS ===== */
       formData.append("clientFeedback", clientFeedback);
       formData.append("nextVisit", nextVisit);
-
       formData.append("lat", lat);
       formData.append("lng", lng);
 
       await axios.post(
-        "https://zugo-backend-trph.onrender.com/api/visits",
+        "https://zugo-backend-trph.onrender.com/api/visits/add",
         formData
       );
 
-      alert("Visit saved successfully");
+      alert("Visit saved successfully ✅");
       stopCamera();
-      setImage(null);
     } catch (err) {
       console.error(err);
-      alert("Save failed");
+      alert("Save failed ❌");
     } finally {
       setSaving(false);
     }
@@ -253,13 +227,13 @@ export default function EmployeeTracking() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                 />
+
                 <input
                   placeholder="Client Phone"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
 
-                {/* ===== NEW INPUTS ADDED ===== */}
                 <textarea
                   placeholder="Client Feedback Message"
                   value={clientFeedback}
@@ -268,7 +242,6 @@ export default function EmployeeTracking() {
 
                 <input
                   type="date"
-                  placeholder="Next Visit"
                   value={nextVisit}
                   onChange={(e) => setNextVisit(e.target.value)}
                 />
