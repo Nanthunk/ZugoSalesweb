@@ -42,7 +42,7 @@ const visitSchema = new mongoose.Schema(
     /* ===== IMAGE ===== */
     photo: {
       type: String, // Cloudinary URL OR local filename
-      required: true,
+      // required: true,
     },
 
     /* ===== IMPORTANT FOR ADMIN FILTER ===== */
