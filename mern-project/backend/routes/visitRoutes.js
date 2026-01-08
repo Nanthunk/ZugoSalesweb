@@ -12,11 +12,11 @@ router.post(
   "/",
   uploadVisitImage.single("photo"), // frontend field = photo
   async (req, res) => {
-    console.log("REQ BODY:", req.body);
-    console.log("REQ FILE:", req.file);
-
     try {
-      if (!req.file) {
+      console.log("REQ BODY:", req.body);
+      console.log("REQ FILE:", req.file);
+
+      if (!req.file || !req.file.path) {
         return res.status(400).json({ message: "Image missing" });
       }
 
@@ -25,22 +25,27 @@ router.post(
         clientName: req.body.clientName,
         clientPhone: req.body.clientPhone,
 
-        /* ===== NEW SAVED VALUES ===== */
-        clientFeedback: req.body.clientFeedback,
-        nextVisit: req.body.nextVisit,
+        /* ===== NEW VALUES ===== */
+        clientFeedback: req.body.clientFeedback || "",
+        nextVisit: req.body.nextVisit || "",
 
-        lat: req.body.lat,
-        lng: req.body.lng,
+        /* ✅ FORCE NUMBER (IMPORTANT FOR MAP) */
+        lat: Number(req.body.lat),
+        lng: Number(req.body.lng),
 
-        /* ✅ CLOUDINARY URL */
+        /* ✅ CLOUDINARY IMAGE URL */
         photo: req.file.path,
       });
 
       await visit.save();
 
-      res.status(200).json({ success: true });
+      res.status(201).json({
+        success: true,
+        message: "Visit saved successfully",
+        visit,
+      });
     } catch (err) {
-      console.error(err);
+      console.error("Save visit error:", err);
       res.status(500).json({ message: "Server error" });
     }
   }
@@ -57,7 +62,7 @@ router.get("/employee/:name", async (req, res) => {
 
     res.json(visits);
   } catch (err) {
-    console.error(err);
+    console.error("Get visits error:", err);
     res.status(500).json({ message: "Failed to load visits" });
   }
 });
@@ -73,11 +78,10 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit not found" });
     }
 
-    /* 🔥 Remove from Cloudinary */
-    const publicId = visit.photo
-      .split("/")
-      .pop()
-      .split(".")[0];
+    /* 🔥 Extract Cloudinary public_id safely */
+    const urlParts = visit.photo.split("/");
+    const fileName = urlParts[urlParts.length - 1];
+    const publicId = fileName.split(".")[0];
 
     await cloudinary.uploader.destroy(`visits/${publicId}`);
 

@@ -1,46 +1,44 @@
 import Visit from "../models/visitModel.js";
+import cloudinary from "../config/cloudinary.js";
 
-export const getAdminVisits = async (req, res) => {
+export const createVisit = async (req, res) => {
   try {
-    const { date, employeeName } = req.query;
+    const {
+      employeeName,
+      clientName,
+      clientPhone,
+      clientFeedback,
+      nextVisit,
+      lat,
+      lng,
+      imageBase64, // 👈 frontend sends this
+    } = req.body;
 
-    // Validation
-    if (!date || !employeeName) {
-      return res.status(400).json({
-        success: false,
-        message: "Date and employee required",
-      });
+    if (!imageBase64) {
+      return res.status(400).json({ message: "Image missing" });
     }
 
-    // Fetch visits
-    const visits = await Visit.find({
-      visitDate: date,
-      employeeName: employeeName,
-    })
-      .sort({ createdAt: -1 })
-      .select(
-        "clientName phone feedback nextVisit image visitDate employeeName createdAt"
-      );
-
-    // No data case (optional but safe)
-    if (!visits || visits.length === 0) {
-      return res.status(200).json({
-        success: true,
-        visits: [],
-        message: "No visits found for this date",
-      });
-    }
-
-    // Success response
-    res.status(200).json({
-      success: true,
-      visits,
+    // 🔥 Upload to Cloudinary
+    const uploadRes = await cloudinary.uploader.upload(imageBase64, {
+      folder: "visits",
     });
+
+    const visit = new Visit({
+      employeeName,
+      clientName,
+      clientPhone,
+      clientFeedback,
+      nextVisit,
+      lat,
+      lng,
+      photo: uploadRes.secure_url, // ✅ CLOUDINARY URL
+    });
+
+    await visit.save();
+
+    res.status(201).json({ success: true, visit });
   } catch (err) {
-    console.error("Get Admin Visits Error:", err);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    console.error("Create visit error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
