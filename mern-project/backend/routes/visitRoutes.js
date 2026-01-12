@@ -1,55 +1,57 @@
 import express from "express";
 import Visit from "../models/visitModel.js";
-import uploadVisitImage from "../middleware/uploadVisitImage.js";
 import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
 /* ======================
-   SAVE VISIT (CLOUDINARY)
+   SAVE VISIT (CLOUDINARY - BASE64)
 ====================== */
-router.post(
-  "/",
-  uploadVisitImage.single("photo"), // frontend field = photo
-  async (req, res) => {
-    try {
-      console.log("REQ BODY:", req.body);
-      console.log("REQ FILE:", req.file);
+router.post("/", async (req, res) => {
+  try {
+    const {
+      employeeName,
+      clientName,
+      clientPhone,
+      clientFeedback,
+      nextVisit,
+      lat,
+      lng,
+      imageBase64,
+    } = req.body;
 
-      if (!req.file || !req.file.path) {
-        return res.status(400).json({ message: "Image missing" });
-      }
-
-      const visit = new Visit({
-        employeeName: req.body.employeeName,
-        clientName: req.body.clientName,
-        clientPhone: req.body.clientPhone,
-
-        /* ===== NEW VALUES ===== */
-        clientFeedback: req.body.clientFeedback || "",
-        nextVisit: req.body.nextVisit || "",
-
-        /* ✅ FORCE NUMBER (IMPORTANT FOR MAP) */
-        lat: Number(req.body.lat),
-        lng: Number(req.body.lng),
-
-        /* ✅ CLOUDINARY IMAGE URL */
-        photo: req.file.path,
-      });
-
-      await visit.save();
-
-      res.status(201).json({
-        success: true,
-        message: "Visit saved successfully",
-        visit,
-      });
-    } catch (err) {
-      console.error("Save visit error:", err);
-      res.status(500).json({ message: "Server error" });
+    if (!imageBase64) {
+      return res.status(400).json({ message: "Image missing" });
     }
+
+    // 🔥 Upload to Cloudinary
+    const uploadRes = await cloudinary.uploader.upload(imageBase64, {
+      folder: "visits",
+    });
+
+    const visit = new Visit({
+      employeeName,
+      clientName,
+      clientPhone,
+      clientFeedback: clientFeedback || "",
+      nextVisit: nextVisit || "",
+      lat: Number(lat),
+      lng: Number(lng),
+      photo: uploadRes.secure_url, // ✅ CLOUDINARY URL
+    });
+
+    await visit.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Visit saved successfully",
+      visit,
+    });
+  } catch (err) {
+    console.error("Save visit error:", err);
+    res.status(500).json({ message: "Server error" });
   }
-);
+});
 
 /* ======================
    GET VISITS BY EMPLOYEE
@@ -67,9 +69,6 @@ router.get("/employee/:name", async (req, res) => {
   }
 });
 
-
-
-
 /* ======================
    DELETE VISIT (CLOUDINARY)
 ====================== */
@@ -81,11 +80,7 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit not found" });
     }
 
-    /* 🔥 Extract Cloudinary public_id safely */
-    const urlParts = visit.photo.split("/");
-    const fileName = urlParts[urlParts.length - 1];
-    const publicId = fileName.split(".")[0];
-
+    const publicId = visit.photo.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(`visits/${publicId}`);
 
     await Visit.findByIdAndDelete(req.params.id);
@@ -99,7 +94,5 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 });
-
-
 
 export default router;

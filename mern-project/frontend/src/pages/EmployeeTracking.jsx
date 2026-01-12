@@ -158,7 +158,7 @@ export default function EmployeeTracking() {
   /* ======================
      SAVE IMAGE + DETAILS
   ====================== */
-  const savePhoto = async () => {
+    const savePhoto = async () => {
     if (!image) {
       alert("Capture image first");
       return;
@@ -167,32 +167,24 @@ export default function EmployeeTracking() {
     try {
       setSaving(true);
 
-      const blob = await (await fetch(image)).blob();
-
-      const formData = new FormData();
-
-      // ✅ IMPORTANT FIX — field name MUST be "photo"
-      formData.append("photo", blob, "visit.jpg");
-
-      formData.append("employeeName", employeeName);
-      formData.append("clientName", clientName);
-      formData.append("clientPhone", clientPhone);
-      formData.append("clientFeedback", clientFeedback);
-      formData.append("nextVisit", nextVisit);
-      formData.append("lat", lat);
-      formData.append("lng", lng);
-
       await axios.post(
-  "https://zugo-backend-trph.onrender.com/api/visits",
-  formData,
-  {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    withCredentials: true,
-  }
-);
-
+        "https://zugo-backend-trph.onrender.com/api/visits",
+        {
+          employeeName,
+          clientName,
+          clientPhone,
+          clientFeedback,
+          nextVisit,
+          lat,
+          lng,
+          imageBase64: image, // ✅ BASE64 SEND
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       alert("Visit saved successfully ✅");
       stopCamera();
@@ -203,6 +195,7 @@ export default function EmployeeTracking() {
       setSaving(false);
     }
   };
+
 
   return (
     <div className="tracking-container">
