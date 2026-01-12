@@ -67,6 +67,19 @@ router.get("/employee/:name", async (req, res) => {
   }
 });
 
+
+router.post(
+  "/",
+  uploadVisitImage.single("photo"),
+  async (req, res) => {
+
+    console.log("FILE:", req.file); // 👈 ADD THIS
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image missing" });
+    }
+  });
+
 /* ======================
    DELETE VISIT (CLOUDINARY)
 ====================== */
@@ -96,5 +109,7 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 });
+
+
 
 export default router;

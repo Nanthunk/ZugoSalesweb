@@ -183,9 +183,16 @@ export default function EmployeeTracking() {
       formData.append("lng", lng);
 
       await axios.post(
-        "https://zugo-backend-trph.onrender.com/api/visits",
-        formData
-      );
+  "https://zugo-backend-trph.onrender.com/api/visits",
+  formData,
+  {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+  }
+);
+
 
       alert("Visit saved successfully ✅");
       stopCamera();
