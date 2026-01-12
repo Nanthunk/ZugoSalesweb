@@ -29,12 +29,6 @@ app.use(
 
 // ❌ REMOVE ALL MANUAL HEADER SETTING (DONE)
 
-// Body parsers
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-
-// Static uploads
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* =======================
    ROUTES
@@ -45,6 +39,14 @@ app.use("/api/members", salesMemberRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/visits", visitRoutes);
+
+// Body parsers
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// Static uploads
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 
 /* =======================
    SERVER + DB
