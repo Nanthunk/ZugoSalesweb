@@ -16,19 +16,23 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   MIDDLEWARE
+   MIDDLEWARE (⚠️ ORDER VERY IMPORTANT)
 ======================= */
 
-// ✅ CORRECT CORS (VERY IMPORTANT)
+// ✅ CORS
 app.use(
   cors({
     origin: "https://zugo-salesweb.vercel.app",
-    credentials: true
+    credentials: true,
   })
 );
 
-// ❌ REMOVE ALL MANUAL HEADER SETTING (DONE)
+// ✅ BODY PARSERS — MUST BE BEFORE ROUTES 🔥
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
 
+// ✅ STATIC (optional – not used now, but safe)
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 /* =======================
    ROUTES
@@ -39,14 +43,6 @@ app.use("/api/members", salesMemberRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/visits", visitRoutes);
-
-// Body parsers
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-
-// Static uploads
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
 
 /* =======================
    SERVER + DB
