@@ -171,8 +171,8 @@ export default function EmployeeTracking() {
 
       const formData = new FormData();
 
-      // ✅ IMPORTANT FIX — field name MUST be "image"
-      formData.append("image", blob, "visit.jpg");
+      // ✅ IMPORTANT FIX — field name MUST be "photo"
+      formData.append("photo", blob, "visit.jpg");
 
       formData.append("employeeName", employeeName);
       formData.append("clientName", clientName);
