@@ -19,6 +19,9 @@ const markerIcon = new L.Icon({
 export default function EmployeeTracking() {
   const mapRef = useRef(null);
   const employeeMarkerRef = useRef(null);
+  const adminMarkersRef = useRef({});
+  const firstFixRef = useRef(false);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
@@ -30,6 +33,7 @@ export default function EmployeeTracking() {
   ====================== */
   let userRole = "employee";
   let employeeName = name || "";
+
   try {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -47,6 +51,7 @@ export default function EmployeeTracking() {
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
   const [selectedEmployee] = useState(employeeName);
+
   const [cameraOn, setCameraOn] = useState(false);
   const [image, setImage] = useState(null);
   const [camError, setCamError] = useState("");
@@ -63,84 +68,102 @@ export default function EmployeeTracking() {
     if (mapRef.current) return;
 
     mapRef.current = L.map("map").setView([11.0168, 76.9558], 6);
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap",
     }).addTo(mapRef.current);
   }, []);
 
   /* ======================
-     EMPLOYEE GEOLOCATION
+     EMPLOYEE LIVE LOCATION
   ====================== */
   useEffect(() => {
-  if (isAdmin || !mapRef.current) return;
+    if (isAdmin || !mapRef.current) return;
 
-  let lastSent = 0;
+    let lastSent = 0;
 
-  const watchId = navigator.geolocation.watchPosition(
-    async (pos) => {
-      const { latitude, longitude, accuracy } = pos.coords;
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy } = pos.coords;
 
-      setLat(latitude);
-      setLng(longitude);
+        // ❌ Ignore bad GPS
+        if (accuracy > 100) return;
 
-      // 🔥 Smooth marker (NO setView spam)
-      if (!employeeMarkerRef.current) {
-        employeeMarkerRef.current = L.marker(
-          [latitude, longitude],
-          { icon: markerIcon }
-        ).addTo(mapRef.current);
-      } else {
-        employeeMarkerRef.current.setLatLng([latitude, longitude]);
+        setLat(latitude);
+        setLng(longitude);
+
+        // ✅ First fix → centre map once
+        if (!firstFixRef.current) {
+          mapRef.current.setView([latitude, longitude], 16);
+          firstFixRef.current = true;
+        }
+
+        // ✅ Single marker + popup
+        if (!employeeMarkerRef.current) {
+          employeeMarkerRef.current = L.marker(
+            [latitude, longitude],
+            { icon: markerIcon }
+          )
+            .addTo(mapRef.current)
+            .bindPopup(`👤 ${selectedEmployee}`)
+            .openPopup();
+        } else {
+          employeeMarkerRef.current.setLatLng([latitude, longitude]);
+        }
+
+        // 🔥 Send backend every 5s
+        const now = Date.now();
+        if (now - lastSent > 5000) {
+          lastSent = now;
+          axios.post(
+            "https://zugo-backend-trph.onrender.com/api/visits/live-location",
+            {
+              employeeName: selectedEmployee,
+              lat: latitude,
+              lng: longitude,
+              accuracy,
+            }
+          );
+        }
+      },
+      (err) => console.error(err),
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
       }
-
-      // 🔥 Send to backend every 5 seconds
-      const now = Date.now();
-      if (now - lastSent > 5000) {
-        lastSent = now;
-
-        axios.post(
-          "https://zugo-backend-trph.onrender.com/api/visits/live-location",
-          {
-            employeeName: selectedEmployee,
-            lat: latitude,
-            lng: longitude,
-            accuracy,
-          }
-        );
-      }
-    },
-    (err) => console.error(err),
-    { enableHighAccuracy: true }
-  );
-
-  return () => navigator.geolocation.clearWatch(watchId);
-}, [isAdmin, selectedEmployee]);
-
-/* for admin */
-
-useEffect(() => {
-  if (!isAdmin || !mapRef.current) return;
-
-  const markers = {};
-
-  const interval = setInterval(async () => {
-    const res = await axios.get(
-      "https://zugo-backend-trph.onrender.com/api/visits/live-locations"
     );
 
-    res.data.forEach((emp) => {
-      if (!markers[emp._id]) {
-        markers[emp._id] = L.marker([emp.lat, emp.lng])
-          .addTo(mapRef.current)
-          .bindPopup(emp._id);
-      } else {
-        markers[emp._id].setLatLng([emp.lat, emp.lng]);
-      }
-    });
-  }, 5000);
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [isAdmin, selectedEmployee]);
 
-  return () => clearInterval(interval);
-}, [isAdmin]);
+  /* ======================
+     ADMIN – VIEW EMPLOYEES
+  ====================== */
+  useEffect(() => {
+    if (!isAdmin || !mapRef.current) return;
+
+    const interval = setInterval(async () => {
+      const res = await axios.get(
+        "https://zugo-backend-trph.onrender.com/api/visits/live-locations"
+      );
+
+      res.data.forEach((emp) => {
+        if (!adminMarkersRef.current[emp._id]) {
+          adminMarkersRef.current[emp._id] = L.marker(
+            [emp.lat, emp.lng],
+            { icon: markerIcon }
+          )
+            .addTo(mapRef.current)
+            .bindPopup(`👤 ${emp._id}`);
+        } else {
+          adminMarkersRef.current[emp._id].setLatLng([emp.lat, emp.lng]);
+        }
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isAdmin]);
 
 
   /* ======================
