@@ -95,4 +95,55 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+/* ======================
+   SAVE LIVE LOCATION (EMPLOYEE)
+====================== */
+router.post("/live-location", async (req, res) => {
+  try {
+    const { employeeName, lat, lng, accuracy } = req.body;
+
+    if (!employeeName || !lat || !lng) {
+      return res.status(400).json({ message: "Invalid location data" });
+    }
+
+    await Visit.create({
+      employeeName,
+      clientName: "LIVE_TRACK",
+      clientPhone: "0000000000",
+      lat,
+      lng,
+      photo: "",
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Live location error:", err);
+    res.status(500).json({ message: "Live location failed" });
+  }
+});
+
+/* ======================
+   GET LIVE LOCATIONS (ADMIN)
+====================== */
+router.get("/live-locations", async (req, res) => {
+  try {
+    const latest = await Visit.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$employeeName",
+          lat: { $first: "$lat" },
+          lng: { $first: "$lng" },
+          time: { $first: "$createdAt" },
+        },
+      },
+    ]);
+
+    res.json(latest);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch live locations" });
+  }
+});
+
 export default router;

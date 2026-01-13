@@ -72,35 +72,76 @@ export default function EmployeeTracking() {
      EMPLOYEE GEOLOCATION
   ====================== */
   useEffect(() => {
-    if (isAdmin || !mapRef.current) return;
+  if (isAdmin || !mapRef.current) return;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
+  let lastSent = 0;
 
-        setLat(latitude);
-        setLng(longitude);
+  const watchId = navigator.geolocation.watchPosition(
+    async (pos) => {
+      const { latitude, longitude, accuracy } = pos.coords;
 
-        if (!employeeMarkerRef.current) {
-          employeeMarkerRef.current = L.marker(
-            [latitude, longitude],
-            { icon: markerIcon }
-          )
-            .addTo(mapRef.current)
-            .bindPopup(`<strong>${selectedEmployee}</strong>`)
-            .openPopup();
-        } else {
-          employeeMarkerRef.current.setLatLng([latitude, longitude]);
-        }
+      setLat(latitude);
+      setLng(longitude);
 
-        mapRef.current.setView([latitude, longitude], 15);
-      },
-      (err) => console.error("Geo error:", err),
-      { enableHighAccuracy: true }
+      // 🔥 Smooth marker (NO setView spam)
+      if (!employeeMarkerRef.current) {
+        employeeMarkerRef.current = L.marker(
+          [latitude, longitude],
+          { icon: markerIcon }
+        ).addTo(mapRef.current);
+      } else {
+        employeeMarkerRef.current.setLatLng([latitude, longitude]);
+      }
+
+      // 🔥 Send to backend every 5 seconds
+      const now = Date.now();
+      if (now - lastSent > 5000) {
+        lastSent = now;
+
+        axios.post(
+          "https://zugo-backend-trph.onrender.com/api/visits/live-location",
+          {
+            employeeName: selectedEmployee,
+            lat: latitude,
+            lng: longitude,
+            accuracy,
+          }
+        );
+      }
+    },
+    (err) => console.error(err),
+    { enableHighAccuracy: true }
+  );
+
+  return () => navigator.geolocation.clearWatch(watchId);
+}, [isAdmin, selectedEmployee]);
+
+/* for admin */
+
+useEffect(() => {
+  if (!isAdmin || !mapRef.current) return;
+
+  const markers = {};
+
+  const interval = setInterval(async () => {
+    const res = await axios.get(
+      "https://zugo-backend-trph.onrender.com/api/visits/live-locations"
     );
 
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [isAdmin, selectedEmployee]);
+    res.data.forEach((emp) => {
+      if (!markers[emp._id]) {
+        markers[emp._id] = L.marker([emp.lat, emp.lng])
+          .addTo(mapRef.current)
+          .bindPopup(emp._id);
+      } else {
+        markers[emp._id].setLatLng([emp.lat, emp.lng]);
+      }
+    });
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [isAdmin]);
+
 
   /* ======================
      CAMERA FUNCTIONS
