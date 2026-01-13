@@ -77,65 +77,70 @@ export default function EmployeeTracking() {
   /* ======================
      EMPLOYEE LIVE LOCATION
   ====================== */
-  useEffect(() => {
-    if (isAdmin || !mapRef.current) return;
+  const firstFixRef = useRef(false);
 
-    let lastSent = 0;
+useEffect(() => {
+  if (isAdmin || !mapRef.current) return;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude, accuracy } = pos.coords;
+  let lastSent = 0;
 
-        // ❌ Ignore bad GPS
-        if (accuracy > 100) return;
+  const watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const { latitude, longitude, accuracy } = pos.coords;
 
-        setLat(latitude);
-        setLng(longitude);
+      // ✅ Always update location (DO NOT BLOCK)
+      setLat(latitude);
+      setLng(longitude);
 
-        // ✅ First fix → centre map once
-        if (!firstFixRef.current) {
-          mapRef.current.setView([latitude, longitude], 16);
-          firstFixRef.current = true;
-        }
-
-        // ✅ Single marker + popup
-        if (!employeeMarkerRef.current) {
-          employeeMarkerRef.current = L.marker(
-            [latitude, longitude],
-            { icon: markerIcon }
-          )
-            .addTo(mapRef.current)
-            .bindPopup(`👤 ${selectedEmployee}`)
-            .openPopup();
-        } else {
-          employeeMarkerRef.current.setLatLng([latitude, longitude]);
-        }
-
-        // 🔥 Send backend every 5s
-        const now = Date.now();
-        if (now - lastSent > 5000) {
-          lastSent = now;
-          axios.post(
-            "https://zugo-backend-trph.onrender.com/api/visits/live-location",
-            {
-              employeeName: selectedEmployee,
-              lat: latitude,
-              lng: longitude,
-              accuracy,
-            }
-          );
-        }
-      },
-      (err) => console.error(err),
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000,
+      // ✅ Center map ONLY first time
+      if (!firstFixRef.current) {
+        mapRef.current.setView([latitude, longitude], 16);
+        firstFixRef.current = true;
       }
-    );
 
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [isAdmin, selectedEmployee]);
+      // ✅ Single marker + employee popup
+      if (!employeeMarkerRef.current) {
+        employeeMarkerRef.current = L.marker(
+          [latitude, longitude],
+          { icon: markerIcon }
+        )
+          .addTo(mapRef.current)
+          .bindPopup(`👤 ${selectedEmployee}`)
+          .openPopup();
+      } else {
+        employeeMarkerRef.current.setLatLng([latitude, longitude]);
+      }
+
+      // 🔥 Send live location to backend (every 5 sec)
+      const now = Date.now();
+      if (now - lastSent > 5000) {
+        lastSent = now;
+
+        axios.post(
+          "https://zugo-backend-trph.onrender.com/api/visits/live-location",
+          {
+            employeeName: selectedEmployee,
+            lat: latitude,
+            lng: longitude,
+            accuracy, // store but DON'T block
+          }
+        );
+      }
+    },
+    (err) => {
+      console.error("Geo error:", err);
+      alert("Location permission denied / unavailable");
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 15000,
+    }
+  );
+
+  return () => navigator.geolocation.clearWatch(watchId);
+}, [isAdmin, selectedEmployee]);
+
 
   /* ======================
      ADMIN – VIEW EMPLOYEES
