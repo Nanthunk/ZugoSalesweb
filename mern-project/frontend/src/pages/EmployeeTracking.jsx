@@ -28,20 +28,22 @@ export default function EmployeeTracking() {
 
   const { name } = useParams();
 
-  /* ======================
-     ROLE CHECK
-  ====================== */
-  let userRole = "employee";
-  let employeeName = name || "";
+let userRole = "employee";
+let employeeName = "";
 
-  try {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      userRole = user?.role || "employee";
-      if (!employeeName) employeeName = user?.name || "Employee";
+try {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const user = JSON.parse(storedUser);
+    userRole = user?.role || "employee";
+
+    // 🔥 Only set employeeName if NOT admin
+    if (userRole !== "admin") {
+      employeeName = name || user?.name || "Employee";
     }
-  } catch {}
+  }
+} catch {}
+
 
   const isAdmin = userRole === "admin";
 
