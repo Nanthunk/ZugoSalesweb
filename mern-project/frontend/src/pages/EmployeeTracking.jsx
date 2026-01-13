@@ -77,7 +77,6 @@ export default function EmployeeTracking() {
   /* ======================
      EMPLOYEE LIVE LOCATION
   ====================== */
-  const firstFixRef = useRef(false);
 
 useEffect(() => {
   if (isAdmin || !mapRef.current) return;
