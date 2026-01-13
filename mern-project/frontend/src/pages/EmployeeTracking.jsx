@@ -46,16 +46,14 @@ export default function EmployeeTracking() {
   ====================== */
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
-  const [selectedEmployee, setSelectedEmployee] = useState(employeeName);
+  const [selectedEmployee] = useState(employeeName);
   const [cameraOn, setCameraOn] = useState(false);
   const [image, setImage] = useState(null);
   const [camError, setCamError] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
-
   const [clientFeedback, setClientFeedback] = useState("");
   const [nextVisit, setNextVisit] = useState("");
-
   const [saving, setSaving] = useState(false);
 
   /* ======================
@@ -152,13 +150,14 @@ export default function EmployeeTracking() {
     ctx.fillText(`📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`, 10, canvas.height - 45);
     ctx.fillText(`⏰ ${new Date().toLocaleString()}`, 10, canvas.height - 20);
 
-    setImage(canvas.toDataURL("image/jpeg", 0.7));
+    // 🔥 REDUCED QUALITY (IMPORTANT)
+    setImage(canvas.toDataURL("image/jpeg", 0.5));
   };
 
   /* ======================
      SAVE IMAGE + DETAILS
   ====================== */
-    const savePhoto = async () => {
+  const savePhoto = async () => {
     if (!image) {
       alert("Capture image first");
       return;
@@ -177,12 +176,7 @@ export default function EmployeeTracking() {
           nextVisit,
           lat,
           lng,
-          imageBase64: image, // ✅ BASE64 SEND
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          imageBase64: image,
         }
       );
 
@@ -195,7 +189,6 @@ export default function EmployeeTracking() {
       setSaving(false);
     }
   };
-
 
   return (
     <div className="tracking-container">
@@ -227,27 +220,22 @@ export default function EmployeeTracking() {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                 />
-
                 <input
                   placeholder="Client Phone"
                   value={clientPhone}
                   onChange={(e) => setClientPhone(e.target.value)}
                 />
-
                 <textarea
                   placeholder="Client Feedback Message"
                   value={clientFeedback}
                   onChange={(e) => setClientFeedback(e.target.value)}
                 />
-
                 <input
                   type="date"
                   value={nextVisit}
                   onChange={(e) => setNextVisit(e.target.value)}
                 />
-
                 <input value={selectedEmployee} disabled />
-
                 <button onClick={savePhoto} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
