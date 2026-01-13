@@ -5,7 +5,7 @@ import cloudinary from "../config/cloudinary.js";
 const router = express.Router();
 
 /* ======================
-   SAVE VISIT (CLOUDINARY - BASE64)
+   SAVE VISIT (ONLY CAMERA)
 ====================== */
 router.post("/", async (req, res) => {
   try {
@@ -20,8 +20,14 @@ router.post("/", async (req, res) => {
       imageBase64,
     } = req.body;
 
+    // ✅ SINGLE FIX 🔥
+    // Live-location calls will NOT save anything
     if (!imageBase64) {
-      return res.status(400).json({ message: "Image missing" });
+      return res.status(200).json({
+        success: true,
+        skipped: true,
+        message: "Live location ignored",
+      });
     }
 
     // 🔥 Upload to Cloudinary
@@ -37,7 +43,7 @@ router.post("/", async (req, res) => {
       nextVisit: nextVisit || "",
       lat: Number(lat),
       lng: Number(lng),
-      photo: uploadRes.secure_url, // ✅ CLOUDINARY URL
+      photo: uploadRes.secure_url,
     });
 
     await visit.save();
@@ -55,11 +61,13 @@ router.post("/", async (req, res) => {
 
 /* ======================
    GET VISITS BY EMPLOYEE
+   (ONLY CAMERA VISITS)
 ====================== */
 router.get("/employee/:name", async (req, res) => {
   try {
     const visits = await Visit.find({
       employeeName: req.params.name,
+      photo: { $ne: "" }, // ✅ EXTRA SAFETY
     }).sort({ createdAt: -1 });
 
     res.json(visits);
@@ -80,8 +88,10 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Visit not found" });
     }
 
-    const publicId = visit.photo.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(`visits/${publicId}`);
+    if (visit.photo) {
+      const publicId = visit.photo.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`visits/${publicId}`);
+    }
 
     await Visit.findByIdAndDelete(req.params.id);
 
@@ -96,38 +106,21 @@ router.delete("/:id", async (req, res) => {
 });
 
 /* ======================
-   SAVE LIVE LOCATION (EMPLOYEE)
+   LIVE LOCATION (NO DB SAVE ❌)
 ====================== */
 router.post("/live-location", async (req, res) => {
-  try {
-    const { employeeName, lat, lng, accuracy } = req.body;
-
-    if (!employeeName || !lat || !lng) {
-      return res.status(400).json({ message: "Invalid location data" });
-    }
-
-    await Visit.create({
-      employeeName,
-      clientName: "LIVE_TRACK",
-      clientPhone: "0000000000",
-      lat,
-      lng,
-      photo: "",
-    });
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Live location error:", err);
-    res.status(500).json({ message: "Live location failed" });
-  }
+  // ❌ DO NOT SAVE IN VISITS
+  // frontend admin map already polling this separately
+  return res.json({ success: true });
 });
 
 /* ======================
-   GET LIVE LOCATIONS (ADMIN)
+   GET LIVE LOCATIONS (ADMIN MAP)
 ====================== */
 router.get("/live-locations", async (req, res) => {
   try {
     const latest = await Visit.aggregate([
+      { $match: { photo: { $ne: "" } } }, // safety
       { $sort: { createdAt: -1 } },
       {
         $group: {
