@@ -129,6 +129,14 @@ router.get("/live-locations", async (req, res) => {
           lng: { $first: "$lng" },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          employeeName: "$_id", // ✅ Return proper field name instead of _id
+          lat: 1,
+          lng: 1,
+        },
+      },
     ]);
 
     res.json(latest);

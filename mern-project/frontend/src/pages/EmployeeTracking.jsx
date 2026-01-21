@@ -39,12 +39,16 @@ try {
 
     // 🔥 Only set employeeName if NOT admin
     if (userRole !== "admin") {
+      // ✅ Priority: URL param > localStorage user name > "Employee"
       employeeName = name || user?.name || "Employee";
     }
   }
 } catch {
     // Silently ignore parsing errors
   }
+
+// 🔥 DEBUG: Check if employee name is being set
+console.log("🔍 EmployeeTracking Debug:", { userRole, employeeName, urlName: name });
 
 
   const isAdmin = userRole === "admin";
@@ -157,15 +161,18 @@ useEffect(() => {
       );
 
       res.data.forEach((emp) => {
-        if (!adminMarkersRef.current[emp._id]) {
-          adminMarkersRef.current[emp._id] = L.marker(
+        // ✅ Use employeeName as the key (it now contains the name)
+        const empKey = emp.employeeName || emp._id || "Unknown";
+        
+        if (!adminMarkersRef.current[empKey]) {
+          adminMarkersRef.current[empKey] = L.marker(
             [emp.lat, emp.lng],
             { icon: markerIcon }
           )
             .addTo(mapRef.current)
-            .bindPopup(`👤 ${emp.name}`); 
+            .bindPopup(`👤 ${empKey}`);
         } else {
-          adminMarkersRef.current[emp._id].setLatLng([emp.lat, emp.lng]);
+          adminMarkersRef.current[empKey].setLatLng([emp.lat, emp.lng]);
         }
       });
     }, 5000);
