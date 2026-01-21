@@ -42,7 +42,9 @@ try {
       employeeName = name || user?.name || "Employee";
     }
   }
-} catch {}
+} catch {
+    // Silently ignore parsing errors
+  }
 
 
   const isAdmin = userRole === "admin";
@@ -269,6 +271,7 @@ useEffect(() => {
 
       {!isAdmin && (
         <div className="camera-section">
+          {camError && <div className="error-message">{camError}</div>}
           {!image ? (
             <video ref={videoRef} muted playsInline />
           ) : (
