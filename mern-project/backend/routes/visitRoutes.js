@@ -124,10 +124,9 @@ router.get("/live-locations", async (req, res) => {
       { $sort: { createdAt: -1 } },
       {
         $group: {
-          _id: "$employeeName",
+          _id: "$employeeName", // ✅ Correctly groups by name
           lat: { $first: "$lat" },
           lng: { $first: "$lng" },
-          time: { $first: "$createdAt" },
         },
       },
     ]);

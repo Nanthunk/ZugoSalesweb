@@ -163,7 +163,7 @@ useEffect(() => {
             { icon: markerIcon }
           )
             .addTo(mapRef.current)
-            .bindPopup(`👤 ${emp._id}`);
+            .bindPopup(`👤 ${emp.name}`); 
         } else {
           adminMarkersRef.current[emp._id].setLatLng([emp.lat, emp.lng]);
         }
