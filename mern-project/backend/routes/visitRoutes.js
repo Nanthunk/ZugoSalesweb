@@ -104,46 +104,40 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 });
+// ===== TEMP IN-MEMORY LIVE LOCATION STORE =====
+const liveUsers = {}; // { employeeName: { lat, lng, updatedAt } }
 
 /* ======================
-   LIVE LOCATION (NO DB SAVE ❌)
+   LIVE LOCATION (STORE ONLY)
 ====================== */
-router.post("/live-location", async (req, res) => {
-  // ❌ DO NOT SAVE IN VISITS
-  // frontend admin map already polling this separately
-  return res.json({ success: true });
-});
+router.post("/live-location", (req, res) => {
+  const { employeeName, lat, lng } = req.body;
 
-/* ======================
-   GET LIVE LOCATIONS (ADMIN MAP)
-====================== */
-router.get("/live-locations", async (req, res) => {
-  try {
-    const latest = await Visit.aggregate([
-      { $match: { photo: { $ne: "" } } }, // safety
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$employeeName", // ✅ Correctly groups by name
-          lat: { $first: "$lat" },
-          lng: { $first: "$lng" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          employeeName: "$_id", // ✅ Return proper field name instead of _id
-          lat: 1,
-          lng: 1,
-        },
-      },
-    ]);
-
-    res.json(latest);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch live locations" });
+  if (!employeeName || !lat || !lng) {
+    return res.status(400).json({ message: "Invalid live location" });
   }
+
+  liveUsers[employeeName] = {
+    lat,
+    lng,
+    updatedAt: Date.now(),
+  };
+
+  res.json({ success: true });
 });
+
+/* ======================
+   ADMIN – GET LIVE LOCATIONS
+====================== */
+router.get("/live-locations", (req, res) => {
+  const result = Object.entries(liveUsers).map(([name, loc]) => ({
+    employeeName: name,
+    lat: loc.lat,
+    lng: loc.lng,
+  }));
+
+  res.json(result);
+});
+
 
 export default router;

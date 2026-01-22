@@ -29,7 +29,7 @@ export default function EmployeeTracking() {
   const { name } = useParams();
 
 let userRole = "employee";
-let employeeName = "";
+let employeeName = "Employee";
 
 try {
   const storedUser = localStorage.getItem("user");
@@ -37,15 +37,13 @@ try {
     const user = JSON.parse(storedUser);
     userRole = user?.role || "employee";
 
-    // 🔥 Only set employeeName if NOT admin
     if (userRole !== "admin") {
-      // ✅ Priority: URL param > localStorage user name > "Employee"
-      employeeName = name || user?.name || "Employee";
+      employeeName = user?.name || user?.email || "Employee";
     }
   }
 } catch {
-    // Silently ignore parsing errors
-  }
+  // Ignore JSON parse errors
+}
 
 // 🔥 DEBUG: Check if employee name is being set
 console.log("🔍 EmployeeTracking Debug:", { userRole, employeeName, urlName: name });
@@ -106,17 +104,17 @@ useEffect(() => {
       }
 
       // ✅ Single marker + employee popup
-      if (!employeeMarkerRef.current) {
-        employeeMarkerRef.current = L.marker(
-          [latitude, longitude],
-          { icon: markerIcon }
-        )
-          .addTo(mapRef.current)
-          .bindPopup(`👤 ${selectedEmployee}`)
-          .openPopup();
-      } else {
-        employeeMarkerRef.current.setLatLng([latitude, longitude]);
-      }
+     if (!employeeMarkerRef.current) {
+  employeeMarkerRef.current = L.marker(
+    [latitude, longitude],
+    { icon: markerIcon }
+  )
+    .addTo(mapRef.current)
+    .bindPopup(`👤 ${selectedEmployee}`);
+} else {
+  employeeMarkerRef.current.setLatLng([latitude, longitude]);
+}
+ 
 
       // 🔥 Send live location to backend (every 5 sec)
       const now = Date.now();
@@ -153,32 +151,32 @@ useEffect(() => {
      ADMIN – VIEW EMPLOYEES
   ====================== */
   useEffect(() => {
-    if (!isAdmin || !mapRef.current) return;
+  if (!isAdmin || !mapRef.current) return;
 
-    const interval = setInterval(async () => {
-      const res = await axios.get(
-        "https://zugo-backend-trph.onrender.com/api/visits/live-locations"
-      );
+  const interval = setInterval(async () => {
+    const res = await axios.get(
+      "https://zugo-backend-trph.onrender.com/api/visits/live-locations"
+    );
 
-      res.data.forEach((emp) => {
-        // ✅ Use employeeName as the key (it now contains the name)
-        const empKey = emp.employeeName || emp._id || "Unknown";
-        
-        if (!adminMarkersRef.current[empKey]) {
-          adminMarkersRef.current[empKey] = L.marker(
-            [emp.lat, emp.lng],
-            { icon: markerIcon }
-          )
-            .addTo(mapRef.current)
-            .bindPopup(`👤 ${empKey}`);
-        } else {
-          adminMarkersRef.current[empKey].setLatLng([emp.lat, emp.lng]);
-        }
-      });
-    }, 5000);
+    res.data.forEach((emp) => {
+      const key = emp.employeeName;
 
-    return () => clearInterval(interval);
-  }, [isAdmin]);
+      if (!adminMarkersRef.current[key]) {
+        adminMarkersRef.current[key] = L.marker(
+          [emp.lat, emp.lng],
+          { icon: markerIcon }
+        )
+          .addTo(mapRef.current)
+          .bindPopup(`👤 ${key}`);
+      } else {
+        adminMarkersRef.current[key].setLatLng([emp.lat, emp.lng]);
+      }
+    });
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [isAdmin]);
+
 
 
   /* ======================
