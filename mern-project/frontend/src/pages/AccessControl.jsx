@@ -34,6 +34,7 @@ const AccessControl = () => {
   const allowedAdmins = [
     "zugoprivatelimited.md@gmail.com",
     "zugoprivatelimited.hr@gmail.com",
+    "zugoprivatelimited.saleshr@gmail.com",
   ];
 
   const isAdmin =
