@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 const admins = [
   { email: "zugoprivatelimited.md@gmail.com", password: "bharathraj13" },
   { email: "zugoprivatelimited.hr@gmail.com", password: "sindhu03" },
+  { email: "zugoprivatelimited.saleshr@gmail.com", password: "kiruthika30" },
 ];
 
 /* =========================
