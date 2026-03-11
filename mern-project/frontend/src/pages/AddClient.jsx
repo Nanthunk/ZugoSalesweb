@@ -159,7 +159,7 @@ export default function AddClient() {
               />
             </div>
 
-            <div className="form-row">
+            
             <div className="form-group">
               <label>Visiting Date</label>
               <input
