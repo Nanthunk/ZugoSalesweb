@@ -109,7 +109,7 @@ export default function AddClient() {
                 name="customerId"
                 value={form.customerId}
                 onChange={handleChange}
-                required
+                // required
               />
             </div>
 
@@ -149,7 +149,19 @@ export default function AddClient() {
           {/* Row 3 */}
           <div className="form-row">
             <div className="form-group">
-              <label>Date</label>
+              <label>Appointment fixed Date</label>
+              <input
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-row">
+            <div className="form-group">
+              <label>Visiting Date</label>
               <input
                 type="date"
                 name="date"
@@ -181,10 +193,11 @@ export default function AddClient() {
                 required
               >
                 <option value="">Select Status</option>
-                <option>Completed</option>
-                <option>Processing</option>
-                <option>On Hold</option>
-                <option>Rejected</option>
+                <option>DNP</option>
+                <option>Follow-up</option>
+                <option>Not-Interested</option>
+                <option>Closed</option>
+                <option>Demo-Booked</option>
               </select>
             </div>
 
