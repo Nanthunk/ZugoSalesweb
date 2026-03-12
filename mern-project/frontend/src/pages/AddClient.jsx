@@ -28,14 +28,17 @@ export default function AddClient() {
     phone: "",
     email: "",
     date: "",
+    visitDate: "",
+    location: "",
     type: "",
     status: "",
     followingBy: "",
+    bookedBy: "",
   });
 
   const [members, setMembers] = useState([]);
 
-  // Load members
+  // Load members (sales persons)
   useEffect(() => {
     axios
       .get(`${API}/api/members`, auth)
@@ -43,7 +46,26 @@ export default function AddClient() {
       .catch(() => console.log("Error loading members"));
   }, []);
 
-  // Load from state
+  // AUTO CUSTOMER ID GENERATOR
+  useEffect(() => {
+    if (editId) return;
+
+    axios
+      .get(`${API}/api/clients`, auth)
+      .then((res) => {
+        const count = res.data.length + 1;
+
+        const newId = "CL" + String(count).padStart(3, "0");
+
+        setForm((prev) => ({
+          ...prev,
+          customerId: newId,
+        }));
+      })
+      .catch(() => console.log("Customer ID generation failed"));
+  }, [editId]);
+
+  // Load client from state
   useEffect(() => {
     if (stateClient) {
       setForm(stateClient);
@@ -51,11 +73,12 @@ export default function AddClient() {
     }
   }, [stateClient]);
 
-  // Load by URL ID
+  // Load client from URL
   useEffect(() => {
     if (!urlId || stateClient) return;
 
     setIsLoading(true);
+
     axios
       .get(`${API}/api/clients/${urlId}`, auth)
       .then((res) => {
@@ -78,7 +101,7 @@ export default function AddClient() {
         await axios.put(`${API}/api/clients/${editId}`, form, auth);
         alert("Client updated successfully");
       } else {
-        await axios.post(`${API}/api/clients`, form, auth); // ✅ FIXED
+        await axios.post(`${API}/api/clients`, form, auth);
         alert("Client added successfully");
       }
 
@@ -101,6 +124,7 @@ export default function AddClient() {
         </h1>
 
         <form className="client-form" onSubmit={handleSubmit}>
+          
           {/* Row 1 */}
           <div className="form-row">
             <div className="form-group">
@@ -108,8 +132,7 @@ export default function AddClient() {
               <input
                 name="customerId"
                 value={form.customerId}
-                onChange={handleChange}
-                // required
+                readOnly
               />
             </div>
 
@@ -149,7 +172,7 @@ export default function AddClient() {
           {/* Row 3 */}
           <div className="form-row">
             <div className="form-group">
-              <label>Appointment fixed Date</label>
+              <label>Appointment Fixed Date</label>
               <input
                 type="date"
                 name="date"
@@ -159,15 +182,13 @@ export default function AddClient() {
               />
             </div>
 
-            
             <div className="form-group">
               <label>Visiting Date</label>
               <input
                 type="date"
-                name="date"
-                value={form.date}
+                name="visitDate"
+                value={form.visitDate}
                 onChange={handleChange}
-                required
               />
             </div>
 
@@ -185,6 +206,16 @@ export default function AddClient() {
           {/* Row 4 */}
           <div className="form-row">
             <div className="form-group">
+              <label>Client Location</label>
+              <input
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="Enter client location"
+              />
+            </div>
+
+            <div className="form-group">
               <label>Status</label>
               <select
                 name="status"
@@ -200,7 +231,10 @@ export default function AddClient() {
                 <option>Demo-Booked</option>
               </select>
             </div>
+          </div>
 
+          {/* Row 5 */}
+          <div className="form-row">
             <div className="form-group">
               <label>Following By</label>
               <select
@@ -217,6 +251,23 @@ export default function AddClient() {
                 ))}
               </select>
             </div>
+
+            <div className="form-group">
+              <label>Booked By</label>
+              <select
+                name="bookedBy"
+                value={form.bookedBy}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Sales Person</option>
+                {members.map((m) => (
+                  <option key={m._id} value={m.name}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="submit-row">
@@ -224,6 +275,7 @@ export default function AddClient() {
               {editId ? "Save Changes" : "Submit"}
             </button>
           </div>
+
         </form>
       </div>
     </div>

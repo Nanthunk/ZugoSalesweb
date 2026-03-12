@@ -20,12 +20,13 @@ const app = express();
 ======================= */
 
 // ✅ CORS
-app.use(
-  cors({
-    origin: "https://zugo-salesweb.vercel.app",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://zugo-salesweb.vercel.app"
+  ],
+  credentials: true
+}));
 
 // ✅ BODY PARSERS — MUST BE BEFORE ROUTES 🔥
 app.use(express.json({ limit: "10mb" }));
