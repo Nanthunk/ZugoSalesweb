@@ -1,340 +1,180 @@
-.client-follow-container {
-  width: 100%;
-  padding-right: 20px;
+.client-follow-container{
+padding:30px;
+font-family:Arial;
 }
 
-.title {
-  font-size: 26px;
-  color: #5a0278;
-  font-weight: bold;
+.title{
+font-size:28px;
+font-weight:bold;
 }
 
-.subtitle {
-  font-size: 22px;
-  color: #5a0278;
-  margin-top: -8px;
+.subtitle{
+color:gray;
+margin-top:-5px;
 }
 
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+.top-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
 }
 
-.top-controls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.top-controls{
+display:flex;
+gap:15px;
 }
 
-.sort-date-box {
-  display: flex;
-  gap: 10px;
-  background: #ffffff;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.add-client-btn{
+background:#3e2ecc;
+color:white;
 }
 
-.sort-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #ececec;
-  cursor: pointer;
-  font-weight: 600;
+
+.search-box{
+width:300px;
+padding:8px;
+margin-bottom:15px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
-.date-box {
-  padding: 7px 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.status-section{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+justify-content: space-between;
 }
 
-.add-client-btn {
-  padding: 10px 20px;
-  background: #7d0af3;
-  color: white;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+.status-btn{
+padding:6px 14px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+color:white;
+font-size:13px;
 }
 
-/* ================= STATUS SECTION ================= */
-
-.status-section {
-  display: flex;
-  margin: 20px 0;
-  padding-right: 50px;
-  justify-content: space-between;
-}
-
-/* BASE BUTTON */
-.status-btn {
-  padding: 10px 22px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-/* ✅ COLOR FIX USING POSITION (NO JSX CHANGE) */
-.status-btn:nth-child(1) {
-  background: #444;              /* All */
-}
-
-.status-btn:nth-child(2) {
-  background: #219900;           /* Completed */
-}
-
-.status-btn:nth-child(3) {
-  background: #ccc903;           /* Processing */
-  color: #000;
-}
-
-.status-btn:nth-child(4) {
-  background: #f4d300;           /* On Hold */
-  color: #000;
-}
-
-.status-btn:nth-child(5) {
-  background: #cf0a04;           /* Rejected */
-}
-
-/* ACTIVE EFFECT */
-.status-btn.active {
-  transform: scale(1.05);
-  box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
-}
-
-/* ACTIVE DARK COLORS */
-.status-btn:nth-child(1).active { background: #333; }
-.status-btn:nth-child(2).active { background: #1a7a00; }
-.status-btn:nth-child(3).active { background: #b2ae00; }
-.status-btn:nth-child(4).active { background: #d5bb00; }
-.status-btn:nth-child(5).active { background: #a30602; }
-
-.status-btn:hover {
-  scale: 1.09;
-}
-
-/* ================= SEARCH ================= */
-
-.search-box {
-  width: 260px;
-  padding: 10px 14px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-/* ================= TABLE ================= */
-
-.clients-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-top: 15px;
-}
-
-.clients-table thead {
-  background: #f7f7f7;
-}
-
-.clients-table th {
-  padding: 14px;
-  text-align: left;
-  font-weight: 700;
-  color: #444;
-  border-bottom: 2px solid #e6e6e6;
-}
-
-.clients-table td {
-  padding: 14px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.clients-table tbody tr:nth-child(even) {
-  background: #fafafa;
-}
-
-/* COLUMN WIDTHS */
-.col-id { width: 60px; }
-.col-name { width: 220px; }
-.col-phone { width: 160px; }
-.col-date { width: 140px; }
-.col-type { width: 120px; }
-.col-status { width: 140px; }
-.col-actions { width: 160px; }
-.col-follow {
-  width: 160px;
-  text-align: left;
-}
-
-.col-status,
-.col-actions {
-  text-align: center;
-}
-
-.no-data {
-  text-align: center !important;
-  font-size: 16px;
-  padding: 25px !important;
-  color: #777;
-}
-
-/* ================= STATUS COLOR BADGE ================= */
-
-.status-badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-  display: inline-block;
-  min-width: 90px;
-  text-align: center;
+.status-btn.active{
+transform:scale(1.05);
 }
 
 /* STATUS COLORS */
-.status-badge.completed {
-  background: #219900;
+
+.all{
+background:#193436;
 }
 
-.status-badge.processing {
-  background: #ccc903;
-  color: #000;
+.dnp{
+background:#ed1f08;
 }
 
-.status-badge.on-hold {
-  background: #f4d300;
-  color: #000;
+.follow-up{
+background:#03a0bc;
 }
 
-.status-badge.rejected {
-  background: #cf0a04;
+.not-interested{
+background:#9b59b6;
+}
+
+.closed{
+background:#2cb908;
+}
+
+.demo-booked{
+background:#f99d09;
+}
+
+/* TABLE */
+
+.clients-table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:15px;
+font-size:14px;
+}
+
+.clients-table th{
+background:#f5f5f5;
+padding:14px 18px;
+border-bottom:2px solid #ddd;
+text-align:center;
+font-weight:600;
+}
+
+.clients-table td{
+padding:14px 18px;
+border-bottom:1px solid #eee;
+text-align:center;
+line-height:1.6;
+}
+
+/* Row hover effect */
+.clients-table tbody tr:hover{
+background:#fafafa;
+}
+
+/* Proper column spacing */
+.clients-table th,
+.clients-table td{
+min-width:100px;
+}
+
+/* Actions column little wider */
+.clients-table td:last-child,
+.clients-table th:last-child{
+min-width:130px;
 }
 
 
-/* ================= ACTION BUTTONS ================= */
-
-/* ================= ACTION BUTTON FIX ================= */
-
-/* Actions column buttons */
-.clients-table td button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  color: white;
+.status-badge{
+padding:4px 10px;
+border-radius:12px;
+color:white;
+font-size:12px;
 }
 
-/* EDIT BUTTON */
-.clients-table td button:nth-child(1) {
-  background: #007bff;
-  margin-right: 8px;
+/* BADGE COLORS */
+
+.status-badge.dnp{
+background:#ed1f08;
 }
 
-.clients-table td button:nth-child(1):hover {
-  background: #0060cc;
+.status-badge.follow-up{
+background:#03a0bc;
 }
 
-/* DELETE / REMOVE BUTTON */
-.clients-table td button:nth-child(2) {
-  background: #d50000;
+.status-badge.not-interested{
+background:#9b59b6;
 }
 
-.clients-table td button:nth-child(2):hover {
-  background: #b30000;
+.status-badge.closed{
+background:#2cb908;
 }
 
-
-/* ================= MOBILE ================= */
-
-@media (max-width: 600px) {
-  .client-follow-container {
-    padding: 10px;
-    padding-right: 0;
-  }
-
-  .title {
-    font-size: 22px;
-    margin-top: 10px;
-  }
-
-  .subtitle {
-    font-size: 18px;
-    margin-top: 2px;
-  }
-
-  .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .top-controls {
-    width: 100%;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .sort-date-box {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .add-client-btn {
-    width: 100%;
-  }
-
-  .status-section {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-right: 0;
-  }
-
-  .status-btn {
-    flex: 1 1 45%;
-    text-align: center;
-    padding: 8px;
-    font-size: 13px;
-  }
-
-  .search-box {
-    width: 100%;
-  }
-
-  .clients-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .clients-table th,
-  .clients-table td {
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .edit-btn,
-  .delete-btn {
-    width: 100%;
-  }
+.status-badge.demo-booked{
+background:#f99d09;
 }
+
+/* BUTTONS */
+
+.edit-btn{
+background:#d8bc07;
+color:white;
+border:none;
+padding:5px 10px;
+margin-right:5px;
+border-radius:5px;
+cursor:pointer;
+}
+
+.clients-table .delete-btn{
+  background-color:#cc1400;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:5px;
+  cursor:pointer;
+}
+

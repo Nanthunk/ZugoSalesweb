@@ -8,27 +8,33 @@ const API = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("token");
 
 export default function ClientsFollow() {
+
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortDate, setSortDate] = useState("");
+
   const navigate = useNavigate();
 
-  // 🔹 LOAD CLIENTS
+  // LOAD CLIENTS
   useEffect(() => {
     axios
-      .get(`${API}/api/clients`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setClients(res.data))
-      .catch((err) => console.log(err));
+  .get(`${API}/api/clients`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then((res) => {
+    console.log("CLIENT DATA:", res.data);   // 👈 add this
+    setClients(res.data);
+  })
+  .catch((err) => console.log(err));
   }, []);
 
-  // 🔹 FILTER
+  // FILTER
   const filtered = clients.filter((c) => {
-    const matchesSearch = c.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+
+    const matchesSearch =
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.customerId?.toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus =
       statusFilter === "All" ? true : c.status === statusFilter;
@@ -36,49 +42,70 @@ export default function ClientsFollow() {
     return matchesSearch && matchesStatus;
   });
 
-  let dataToShow = filtered;
+  let dataToShow = [...filtered].sort((a, b) =>
+  b.customerId?.localeCompare(a.customerId)
+);
 
   if (sortDate) {
-    dataToShow = filtered.filter(
-      (item) => item.date === sortDate
-    );
+    dataToShow = filtered.filter((item) => item.date === sortDate);
   }
 
-  // 🔹 DELETE CLIENT
+  // DELETE CLIENT
   const deleteClient = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this client?")) return;
+
+    if (!window.confirm("Delete this client?")) return;
 
     try {
+
       await axios.delete(`${API}/api/clients/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setClients((prev) => prev.filter((c) => c._id !== id));
+
     } catch (err) {
-      console.log("Delete error:", err);
+
+      console.log(err);
       alert("Delete failed");
+
     }
   };
 
+  const statusList = [
+    "All",
+    "DNP",
+    "Follow-up",
+    "Not-Interested",
+    "Closed",
+    "Demo-Booked",
+  ];
+
   return (
+
     <div className="client-follow-container">
+
       <UserMenu />
 
       <div className="top-bar">
+
         <div>
           <h1 className="title">Clients Follow-up</h1>
           <h2 className="subtitle">Database</h2>
         </div>
 
         <div className="top-controls">
+
           <div className="sort-date-box">
+
             <button className="sort-btn">Sort</button>
+
             <input
               type="date"
               className="date-box"
               value={sortDate}
               onChange={(e) => setSortDate(e.target.value)}
             />
+
           </div>
 
           <button
@@ -87,68 +114,102 @@ export default function ClientsFollow() {
           >
             Add New Client Visit
           </button>
+
         </div>
       </div>
 
       <input
         className="search-box"
-        placeholder="Search"
+        placeholder="Search by name or ID"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {/* STATUS BUTTONS */}
+
       <div className="status-section">
-        {["All", "Completed", "Processing", "On Hold", "Rejected"].map((st) => (
+
+        {statusList.map((st) => (
+
           <button
             key={st}
-            className={`status-btn ${
-              st === statusFilter ? "active" : ""
-            }`}
+            className={`status-btn 
+            ${st === statusFilter ? "active" : ""}
+            ${st.replace(" ", "-").toLowerCase()}
+            `}
             onClick={() => setStatusFilter(st)}
           >
             {st}
           </button>
+
         ))}
+
       </div>
 
+      {/* TABLE */}
+
       <table className="clients-table">
+
         <thead>
+
           <tr>
+
             <th>ID</th>
             <th>Name</th>
             <th>Phone</th>
-            <th>Date</th>
+            <th>Appointment</th>
+            <th>Visit Date</th>
+            <th>Location</th>
             <th>Business</th>
+            <th>Booked By</th>
             <th>Following By</th>
             <th>Status</th>
             <th>Actions</th>
+
           </tr>
+
         </thead>
 
         <tbody>
+
           {dataToShow.length === 0 ? (
+
             <tr>
-              <td colSpan={8}>No clients found.</td>
+              <td colSpan="11">No clients found.</td>
             </tr>
+
           ) : (
+
             dataToShow.map((c) => (
+
               <tr key={c._id}>
+
                 <td>{c.customerId}</td>
                 <td>{c.name}</td>
                 <td>{c.phone}</td>
                 <td>{c.date}</td>
+                <td>{c.visitDate}</td>
+                <td>{c.location}</td>
                 <td>{c.type}</td>
+                <td>{c.bookedBy}</td>
                 <td>{c.followingBy}</td>
+
                 <td className="col-status">
-  <span
-    className={`status-badge ${c.status.replace(" ", "-").toLowerCase()}`}
-  >
-    {c.status}
-  </span>
-</td>
+
+                  <span
+                    className={`status-badge ${c.status
+                      .replace(" ", "-")
+                      .toLowerCase()}`}
+                  >
+                    {c.status}
+                  </span>
+
+                </td>
 
                 <td>
+
                   <button
+                    className="edit-btn"
                     onClick={() =>
                       navigate(`/add-client?id=${c._id}`, {
                         state: { client: c },
@@ -158,15 +219,26 @@ export default function ClientsFollow() {
                     Edit
                   </button>
 
-                  <button onClick={() => deleteClient(c._id)}>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteClient(c._id)}
+                  >
                     Remove
                   </button>
+
                 </td>
+
               </tr>
+
             ))
+
           )}
+
         </tbody>
+
       </table>
+
     </div>
+
   );
 }

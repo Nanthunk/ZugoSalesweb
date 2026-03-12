@@ -6,12 +6,22 @@ const clientSchema = new mongoose.Schema(
     name: String,
     phone: String,
     email: String,
+
     date: String,
+    visitDate: String,
+
+    location: String,
+
     type: String,
+    status: String,
+
     followingBy: String,
-    status: String
+    bookedBy: String
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    strict: false   // 🔥 IMPORTANT
+  }
 );
 
 export default mongoose.model("Client", clientSchema);
