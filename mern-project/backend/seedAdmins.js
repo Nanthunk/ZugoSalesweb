@@ -8,6 +8,7 @@ const seed = async () => {
   await Admin.create([
     { email: "zugoprivatelimited.md@gmail.com", password: "bharathraj13" },
     { email: "zugoprivatelimited.hr@gmail.com", password: "sindhu03" },
+    { email: "zugoprivatelimited.saleshr@gmail.com", password: "kiruthika30" },
   ]);
   console.log("seeded admins");
   process.exit(0);
