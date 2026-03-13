@@ -50,7 +50,8 @@ router.get("/admins", requireSignIn, isAdmin, (req, res) => {
 router.post("/add", upload.single("image"), async (req, res) => {
   const admins = [
     { email: "zugoprivatelimited.md@gmail.com" },
-    { email: "zugoprivatelimited.hr@gmail.com" }
+    { email: "zugoprivatelimited.hr@gmail.com" },
+    { email: "zugoprivatelimited.saleshr@gmail.com" }
   ];
 
   const { name, role, email, phone, addedBy } = req.body;
