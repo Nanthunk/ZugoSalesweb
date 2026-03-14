@@ -47,7 +47,7 @@ export default function ClientsFollow() {
 );
 
   if (sortDate) {
-    dataToShow = filtered.filter((item) => item.date === sortDate);
+    dataToShow = filtered.filter((item) => item.visitDate === sortDate);
   }
 
   // DELETE CLIENT
